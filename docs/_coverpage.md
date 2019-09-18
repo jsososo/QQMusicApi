@@ -2,5 +2,5 @@
 
 > QQ音乐 NodeJS 版 API
 
-[GitHub](https://jsososo.github.io/QQMusicApi)
+[GitHub](https://github.com/jsososo/QQMusicApi)
 [Get Started](#qqmusicapi)
