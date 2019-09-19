@@ -1,7 +1,8 @@
 const axios = require('axios');
 const StringHelper = require('./StringHelper');
+const xml2js = require('xml2js').parseString;
 
-const request = async (obj) => {
+const request = async (obj, opts = {}) => {
   if (typeof obj === 'string') {
     obj = {
       url: obj,
@@ -23,12 +24,38 @@ const request = async (obj) => {
   obj.headers.Cookie = Object.keys(global.cookies).map((k) => `${k}=${global.cookies[k]}`).join('; ');
   const res = await axios(obj);
 
+  if (opts.dataType === 'xml') {
+    return handleXml(res.data);
+  }
+
   if (typeof res.data === 'string') {
     res.data = res.data.replace(/callback\(|MusicJsonCallback\(|jsonCallback\(|\)$/g, '');
+    console.log(typeof res.data, res.data);
     return JSON.parse(res.data);
   }
 
   return res.data;
 };
+
+function handleXml(data) {
+  return new Promise((resolve, reject) => {
+    const handleObj = (obj) => {
+      Object.keys(obj).forEach((k) => {
+        const v = obj[k];
+        if ((typeof v).toLowerCase() === 'object' && v instanceof Array && v.length === 1) {
+          obj[k] = v[0];
+        }
+        if ((typeof obj[k]).toLowerCase() === 'object') {
+          handleObj(obj[k]);
+        }
+      })
+    };
+
+    xml2js(data, (err, result) => {
+      handleObj(result);
+      resolve(result);
+    })
+  })
+}
 
 module.exports = request;

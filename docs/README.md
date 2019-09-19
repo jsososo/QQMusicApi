@@ -161,3 +161,81 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 `songmid`: 必填
 
 返回的接口中 `lyric` 和 `trans` 分别是歌词和翻译，转成了base64，这里node进行了解码。
+
+### 推荐歌单
+
+#### 1、为你推荐歌单
+
+接口：`/recommend/playlist/u`
+
+这个接口不需要参数，需要注意，和下面这个接口的数据格式不同
+
+#### 2、按分类推荐歌单
+
+接口：`/recommend/playlist`
+
+参数：
+
+`id`: 分类id，默认为 3317 // 3317: 官方歌单，59：经典，71：情歌，3056：网络歌曲，64：KTV热歌
+
+`pageNo`: 页码，默认为 1
+
+`pageSize`: 每页返回数量，默认为 20
+
+### 新歌推荐
+
+接口：`/new/songs`,
+
+参数：
+
+`type`: 新歌分类，默认为 5 // 5：最新，1：内地，6：港台，2：欧美，4：韩国，3：日本
+
+### 歌手
+
+#### 1、歌手介绍
+
+接口：`/singer/desc`
+
+参数：
+
+`singermid`: 必填
+
+获取歌手的一些详细信息介绍
+
+#### 2、获取歌手专辑
+
+接口：`/singer/album`
+
+参数：
+
+`singermid`: 必填
+
+`pageNo`: 默认 1
+
+`pageSize`: 默认 20
+
+#### 3、相似歌手
+
+接口：`/singer/sim`
+
+参数：
+
+`singermid`: 必填
+
+官方接口是有返回数量参数的，但是最多只返回10个，所以这里就写死返回 10 个
+
+### 获取评论
+
+接口：`/comment`
+
+参数：
+
+`id`: singid 必填
+
+`pageNo`: 默认 1
+
+`pageSize`: 默认 20
+
+`type`: 默认 0  // 0：获取最新评论，1：获取热评
+
+当 `pageNo` 为 1 且 `type` 为 0 时，会返回15条热评 `hot_comment`
