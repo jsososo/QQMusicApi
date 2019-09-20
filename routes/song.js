@@ -4,7 +4,7 @@ const request  = require('../util/request');
 
 router.get('/', async (req, res, next) => {
   const url = "http://u.y.qq.com/cgi-bin/musicu.fcg";
-  const { songmid } = req.query;
+  const { songmid, raw } = req.query;
 
   if (!songmid) {
     return res.send({
@@ -26,7 +26,14 @@ router.get('/', async (req, res, next) => {
 
   const result = await request({ url, data });
 
-  res.send(result);
+  if (Number(raw)) {
+    return res.send(result);
+  }
+
+  res.send({
+    result: 100,
+    data: result.songinfo.data,
+  })
 });
 
 module.exports = router;

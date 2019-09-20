@@ -3,7 +3,7 @@ const router = express.Router();
 const request  = require('../util/request');
 
 router.get('/songs', async (req, res, next) => {
-  const { type = 5 } = req.query;
+  const { type = 5, raw } = req.query;
 
   const result = await request({
     url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
@@ -23,7 +23,20 @@ router.get('/songs', async (req, res, next) => {
     }
   });
 
-  res.send(result);
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    const { lan, type, songlist } = result.new_song.data;
+    res.send({
+      result: 100,
+      data: {
+        lan,
+        list: songlist,
+        type,
+      },
+    })
+  }
+
 });
 
 module.exports = router;

@@ -4,6 +4,7 @@ const request  = require('../util/request');
 
 router.get('/playlist', async (req, res, next) => {
   const {
+    raw,
     pageNo = 1,
     pageSize = 20,
     id = 3317, // 3317: 官方歌单，59：经典，71：情歌，3056：网络歌曲，64：KTV热歌
@@ -33,12 +34,27 @@ router.get('/playlist', async (req, res, next) => {
     data,
   });
 
-  res.send(result);
-
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    const { total, v_playlist } = result.playlist.data;
+    res.send({
+      result: 100,
+      data: {
+        total,
+        list: v_playlist,
+        id,
+        pageNo,
+        pageSize,
+      }
+    })
+  }
 
 });
 
 router.get('/playlist/u', async (req, res, next) => {
+  const { raw } = req.query;
+
   const data = {
     data: JSON.stringify({
       comm: {
@@ -60,7 +76,18 @@ router.get('/playlist/u', async (req, res, next) => {
     data,
   });
 
-  res.send(result);
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    const list = result.recomPlaylist.data.v_hot;
+    res.send({
+      result: 100,
+      data: {
+        list,
+        count: list.length,
+      }
+    })
+  }
 });
 
 module.exports = router;

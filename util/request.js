@@ -3,38 +3,45 @@ const StringHelper = require('./StringHelper');
 const xml2js = require('xml2js').parseString;
 
 const request = async (obj, opts = {}) => {
-  if (typeof obj === 'string') {
-    obj = {
-      url: obj,
-      data: {},
+  try {
+    if (typeof obj === 'string') {
+      obj = {
+        url: obj,
+        data: {},
+      }
     }
+    obj.method = obj.method || 'get';
+
+    const { url, data } = obj;
+
+    if (obj.method === 'get') {
+      obj.url = StringHelper.changeUrlQuery(data, url);
+      delete obj.data;
+    }
+
+    obj.headers = obj.headers || {};
+    obj.xsrfCookieName = 'XSRF-TOKEN';
+    obj.withCredentials = true;
+    obj.headers.Cookie = Object.keys(global.cookies).map((k) => `${k}=${global.cookies[k]}`).join('; ');
+
+    const res = await axios(obj);
+
+    if (opts.dataType === 'xml') {
+      return handleXml(res.data);
+    }
+
+    if (typeof res.data === 'string') {
+      res.data = res.data.replace(/callback\(|MusicJsonCallback\(|jsonCallback\(|\)$/g, '');
+      return JSON.parse(res.data);
+    }
+
+    return res.data;
+  } catch (err) {
+    global.response.send({
+      result: 400,
+      errMsg: `系统异常：${err.message}`,
+    })
   }
-  obj.method = obj.method || 'get';
-
-  const { url, data } = obj;
-
-  if (obj.method === 'get') {
-    obj.url = StringHelper.changeUrlQuery(data, url);
-    delete obj.data;
-  }
-
-  obj.headers = obj.headers || {};
-  obj.xsrfCookieName = 'XSRF-TOKEN';
-  obj.withCredentials = true;
-  obj.headers.Cookie = Object.keys(global.cookies).map((k) => `${k}=${global.cookies[k]}`).join('; ');
-  const res = await axios(obj);
-
-  if (opts.dataType === 'xml') {
-    return handleXml(res.data);
-  }
-
-  if (typeof res.data === 'string') {
-    res.data = res.data.replace(/callback\(|MusicJsonCallback\(|jsonCallback\(|\)$/g, '');
-    console.log(typeof res.data, res.data);
-    return JSON.parse(res.data);
-  }
-
-  return res.data;
 };
 
 function handleXml(data) {

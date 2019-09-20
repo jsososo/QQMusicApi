@@ -3,7 +3,7 @@ const router = express.Router();
 const request  = require('../util/request');
 
 router.get('/', async (req, res, next) => {
-  const { id } = req.query;
+  const { id, raw } = req.query;
   if (!id) {
     return res.send({
       result: 500,
@@ -22,7 +22,16 @@ router.get('/', async (req, res, next) => {
       Referer: 'https://y.qq.com/n/yqq/playlist',
     },
   });
-  res.send(result);
+
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    res.send({
+      result: 100,
+      data: result.cdlist[0] || {},
+    })
+  }
+
 });
 
 module.exports = router;

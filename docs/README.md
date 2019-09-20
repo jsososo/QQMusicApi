@@ -2,7 +2,8 @@
 
 这是一个基于 Express + Axios 的 Nodejs 项目，一切仅供学习参考，该支持的还是要支持的，不然杰伦喝不起奶茶了。
 
-其实有点点嫌弃qq音乐接口的数据格式，但是考虑到一些之前扒过接口的项目，还是打算原汁原味，不做处理啦。
+其实有点点嫌弃qq音乐接口的数据格式，所以会对部分接口返回做一些处理，但是考虑到一些之前扒过接口的项，有些人可能还是喜欢原汁原味，
+可以在接口处增加一个参数 `raw=1` 。
 
 灵感来源：[Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
@@ -105,7 +106,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 `pageSize`: 一页返回数量，默认 20
 
-`t`: 搜索类型 // 0: 单曲，8 专辑； 默认 0
+`t`: 搜索类型 默认为 0  // 0：单曲，2：歌单，7：歌词，8：专辑，12：mv
 
 ### 用户信息
 
@@ -202,7 +203,17 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 获取歌手的一些详细信息介绍
 
-#### 2、获取歌手专辑
+#### 2、获取热门歌曲
+
+接口：`/singer/songs`
+
+参数：
+
+`singermid`: 必填
+
+`num`: 返回歌曲数量
+
+#### 3、获取歌手专辑
 
 接口：`/singer/album`
 
@@ -214,7 +225,19 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 `pageSize`: 默认 20
 
-#### 3、相似歌手
+#### 4、获取mv
+
+接口：`/singer/mv`
+
+参数：
+
+`singermid`: 必填
+
+`pageNo`: 默认 1
+
+`pageSize`: 默认 20
+
+#### 5、相似歌手
 
 接口：`/singer/sim`
 
@@ -239,3 +262,31 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 `type`: 默认 0  // 0：获取最新评论，1：获取热评
 
 当 `pageNo` 为 1 且 `type` 为 0 时，会返回15条热评 `hot_comment`
+
+### 电台
+
+#### 1、电台分类
+
+接口：`/radio/category`
+
+返回电台场景分类以及场景下的各个电台
+
+#### 2、获取电台歌曲
+
+接口：`/radio`
+
+参数：
+
+`id`: 电台id，从上面的分类接口中获取
+
+获取电台中歌曲，其中个性电台需要登陆 cookie
+
+### 获取 MV 播放链接
+
+接口：`/mv`
+
+参数
+
+`id`: 视频的 vid , 必填，多个用,分割
+
+返回的链接都是可以直接播放的完整mv视频

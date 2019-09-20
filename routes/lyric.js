@@ -4,7 +4,7 @@ const request  = require('../util/request');
 const Base64 = require('js-base64');
 
 router.get('/', async (req, res, next) => {
-  const { songmid } = req.query;
+  const { songmid, raw } = req.query;
 
   if (!songmid) {
     return res.send({
@@ -34,7 +34,14 @@ router.get('/', async (req, res, next) => {
 
   result.lyric = Base64.Base64.decode(result.lyric);
   result.trans = Base64.Base64.decode(result.trans || '');
-  res.send(result);
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    res.send({
+      result: 100,
+      data: result,
+    })
+  }
 });
 
 module.exports = router;

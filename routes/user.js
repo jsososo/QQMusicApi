@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const request  = require('../util/request');
 
-router.get('/', (req, res, next) => {
-  res.send(req.cookies);
-});
+// router.get('/', (req, res, next) => {
+//   res.send(req.cookies);
+// });
 
 // 获取用户歌单
 router.get('/detail', async (req, res) => {
@@ -33,6 +33,7 @@ router.get('/detail', async (req, res) => {
     })
   }
 
+  result.result = 100;
   res.send(result);
 });
 

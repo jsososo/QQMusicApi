@@ -3,7 +3,7 @@ const router = express.Router();
 const request  = require('../util/request');
 
 router.get('/', async (req, res, next) => {
-  const { id, pageNo = 1, pageSize = 20, type = 0 } = req.query;
+  const { id, pageNo = 1, pageSize = 20, type = 0, raw } = req.query;
 
   if (!id) {
     return res.send({
@@ -23,7 +23,18 @@ router.get('/', async (req, res, next) => {
     }
   });
 
-  res.send(result);
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    res.send({
+      result: 100,
+      data: {
+        comment: result.comment,
+        hotComment: result.hot_comment,
+        song: result.topic_name,
+      },
+    })
+  }
 });
 
 module.exports = router;
