@@ -216,4 +216,67 @@ router.get('/sim', async (req, res, next) => {
   }
 });
 
+// 获取歌手分类
+router.get('/category', async (req, res) => {
+  const { raw } = req.query;
+
+  const result = await request({
+    url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
+    data: {
+      data: JSON.stringify({"comm":{"ct":24,"cv":0},"singerList":{"module":"Music.SingerListServer","method":"get_singer_list","param":{"area":-100,"sex":-100,"genre":-100,"index":-100,"sin":0,"cur_page":1}}})
+    }
+  });
+
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    res.send({
+      result: 100,
+      data: result.singerList.data.tags,
+    })
+  }
+});
+
+// 根据类型获取歌手列表
+router.get('/list', async (req, res) => {
+  const { area = -100, sex = -100, genre = -100, index = -100, pageNo = 1, raw } = req.query;
+
+  const result = await request({
+    url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
+    data: {
+      data: JSON.stringify({
+        comm: {
+          ct: 24,
+          cv: 0
+        },
+        singerList: {
+          module: "Music.SingerListServer",
+          method: "get_singer_list",
+          param: {
+            area: area / 1,
+            sex: sex / 1,
+            genre: genre / 1,
+            index: index / 1,
+            sin: (pageNo - 1) * 80,
+            cur_page: pageNo / 1,
+          }
+        }
+      })
+    }
+  });
+
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    const trueData = result.singerList.data;
+    trueData.list = trueData.singerlist;
+    delete trueData.tags;
+    delete trueData.singerlist;
+    res.send({
+      result: 100,
+      data: trueData,
+    })
+  }
+});
+
 module.exports = router;
