@@ -103,4 +103,67 @@ router.get('/url', async (req, res, next) => {
   })
 });
 
+// 获取 mv 分类
+router.get('/category', async (req, res) => {
+  const { raw } = req.query;
+  const result = await request({
+    url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
+    data: {
+      data: JSON.stringify({"comm":{"ct":24},"mv_tag":{"module":"MvService.MvInfoProServer","method":"GetAllocTag","param":{}}}),
+    },
+  });
+
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    res.send({
+      result: 100,
+      data: result.mv_tag.data,
+    });
+  }
+});
+
+// 根据分类获取 mv 列表
+router.get('/list', async (req, res) => {
+  const { raw, pageNo = 1, pageSize = 20, version = 7, area = 15 } = req.query;
+  const result = await request({
+    url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
+    data: {
+      data: JSON.stringify({
+        comm: {
+          ct: 24
+        },
+        mv_list: {
+          module: "MvService.MvInfoProServer",
+          method: "GetAllocMvInfo",
+          param: {
+            start: (pageNo - 1) * pageSize,
+            size: pageSize / 1,
+            version_id: version / 1,
+            area_id: area / 1,
+            order: 1
+          }
+        }
+      }),
+    }
+  });
+
+  if (Number(raw)) {
+    res.send(result);
+  } else {
+    const { list, total } = result.mv_list.data;
+    res.send({
+      reuslt: 100,
+      data: {
+        list,
+        total,
+        area: area / 1,
+        version: version / 1,
+        pageNo: pageNo / 1,
+        pageSize: pageSize / 1,
+      },
+    })
+  }
+});
+
 module.exports = router;
