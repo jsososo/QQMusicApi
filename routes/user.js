@@ -10,7 +10,7 @@ router.post('/setCookie', (req, res, next) => {
   const { cookie } = req.query;
 
   cookie.split(' ').forEach((k) => res.append('Set-Cookie', k));
-  global.cookies = cookie;
+  global.cookieStr = cookie;
 
   res.send({
     result: 100,
