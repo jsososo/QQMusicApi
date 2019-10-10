@@ -30,6 +30,10 @@ const request = async (obj, opts = {}) => {
       return handleXml(res.data);
     }
 
+    if (opts.dataType === 'raw') {
+      return res.data;
+    }
+
     if (typeof res.data === 'string') {
       res.data = res.data.replace(/callback\(|MusicJsonCallback\(|jsonCallback\(|\)$/g, '');
       return JSON.parse(res.data);

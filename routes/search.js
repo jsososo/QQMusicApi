@@ -2,6 +2,7 @@ const express = require('express');
 const request = require('../util/request');
 const router = express.Router();
 
+// 搜索
 router.get('/', async (req, res) => {
   let {
     pageNo = 1,
@@ -104,6 +105,21 @@ router.get('/', async (req, res) => {
       t,
       type: typeMap[t],
     }
+  });
+});
+
+// 热搜词
+router.get('/hot', async (req, res) => {
+  const { raw } = req.query;
+  const result = await request({
+    url: 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg',
+  });
+  if (Number(raw)) {
+    return res.send(result);
+  }
+  res.send({
+    result: 100,
+    data: result.data.hotkey,
   });
 });
 
