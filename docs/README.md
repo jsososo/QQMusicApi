@@ -37,6 +37,8 @@ $ npm start
 
 ## 更新记录
 
+19-10-15：👖 url 获取
+
 19-10-10：🤬 热搜词、关注歌手、关注粉丝列表
 
 19-09-23：🏊 歌单、mv 的分类获取
@@ -133,7 +135,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 其他像一些必须要购买数字专辑才能收听的歌曲，如果未购买也是无法获取的，无法获取到的播放链接则不会在返回的对象中出现，
 这点需要大家自己做好兼容，我这里服务器会默认使用自己会员的 cookie，如果需要使用自己的 cookie，请参考上面文档
 
-示例：[/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s](/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s)
+示例：[/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s](http://api.qq.jsososo.com/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s)
 
 ```javascript
 // 晴天和七里香
