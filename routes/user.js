@@ -2,15 +2,23 @@ const express = require('express');
 const router = express.Router();
 const request  = require('../util/request');
 
-router.get('/cookie', (req, res, next) => {
-  res.send(req.cookies);
+router.get('/cookie', (req, res) => {
+  res.send({
+    result: 100,
+    data: {
+      cookie: global.cookies,
+      userCookie: global.userCookie,
+    }
+  });
 });
 
-router.post('/setCookie', (req, res, next) => {
-  const { cookie } = req.query;
-
-  cookie.split(' ').forEach((k) => res.append('Set-Cookie', k));
-  global.cookieStr = cookie;
+router.post('/setCookie', (req, res) => {
+  const { data } = req.body;
+  global.userCookie = {};
+  data.split('; ').forEach((c) => {
+    const arr = c.split('=');
+    global.userCookie[arr[0]] = arr[1];
+  });
 
   res.send({
     result: 100,

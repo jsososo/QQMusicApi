@@ -51,9 +51,20 @@ $ npm start
 
 19-09-18：🐧 init
 
+## 公用参数说明
+
+!> 非常重要，特别是和登陆 cookie 有关的参数
+
+1、`raw` 前面提到的，默认为 `0`, 如果传了非0参数，则表示使用原汁原味的数据结构
+
+2、`ownCookie` 默认为 `0`，使用服务器上预存的 `cookie` 信息, 非0表示使用浏览器传过来的 `cookie`，如果不使用的话，部分接口会遇到 `301`，
+如果该用户非 vip，也无法获取大部分歌曲的播放链接，我自己会不定时的更新这个服务器上（api.qq.jsososo.com）的 `cookie`作为登陆用户
+
 ## 接口文档
 
-### vkey & guid 获取
+### ~vkey & guid 获取（已废弃，直接看下个接口）~
+
+19-10-11，因为企鹅音乐修改了对音乐播放链接的获取，因此这个接口已没有意义，获取播放链接的参考下面的接口
 
 先介绍 vkey 和 guid 的获取，因为这是拼凑音乐链接的关键，也是播放音乐的核心一步
 
@@ -110,6 +121,32 @@ const { s, e } = formatMap[format];
 const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8&uin=0`
 ```
 
+### 播放链接
+
+接口：`/song/urls`
+
+参数：
+
+`id`: 歌曲的 `songmid`，必填，多个用逗号分割，该接口可用 `post` 或 `get`
+
+并不是所有的音乐都能获取到播放链接，如果是未登陆或非 vip 用户的 `cookie`，只能获取到非 vip 用户可听的歌曲，
+其他像一些必须要购买数字专辑才能收听的歌曲，如果未购买也是无法获取的，无法获取到的播放链接则不会在返回的对象中出现，
+这点需要大家自己做好兼容，我这里服务器会默认使用自己会员的 cookie，如果需要使用自己的 cookie，请参考上面文档
+
+示例：[/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s](/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s)
+
+```javascript
+// 晴天和七里香
+{
+  "data": {
+    "0039MnYb0qxYhV": "http://ws.stream.qqmusic.qq.com/C400002202B43Cq4V4.m4a?guid=2796982635&vkey=0A1ADCEDC042ABE27FE184A3436DBB6F15AFF286F0F06DDFAEA9ADAF2D82F67EF33746A9472F62B444B7E7CEB32EE0D34DFD53A6E2D97D7B&uin=1899&fromtag=66",
+    "004Z8Ihr0JIu5s": "http://ws.stream.qqmusic.qq.com/C4000012Ez0a1tFcOI.m4a?guid=2796982635&vkey=DB0E16676C581AE2E762FCA5D32FBB52454EA229C6BD58D9BA2976BA7CC3E49532EA299860E0F219148005848530335ABC254EC7A3374F80&uin=1899&fromtag=66"
+  },
+  "result": 100
+}
+
+```
+
 ### 搜索
 
 接口：`/search`
@@ -145,6 +182,55 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
     ...
   ]
 }
+```
+
+### 查找音乐
+
+#### 单个查找
+
+接口：`/song/find`
+
+参数：
+
+`key`: 关键词
+
+这个接口就像是简化版的搜索，根据关键词获取到搜出的第一个歌曲，不过他会直接带上播放链接，参数为 `url`，
+如果没有则表示无法获取到播放链接。这个接口的作用是，对于其他平台的歌单如果需要获取到企鹅音乐的信息时，
+可以通过 歌名 + 歌手 + 专辑 等关键词获取大致的歌曲，当然这是并不能保障稳定的。
+
+#### 批量获取
+
+接口：`/song/finds`
+
+类型：仅支持`post`
+
+参数：
+
+`data`: 对象，`key` 为歌曲id，`value` 为搜索关键词
+
+同样，并不是所有传过去的 id 都会有返回，没返回就是没有找到，返回的歌曲也都是会包含播放链接
+
+示例：
+```javascript
+anxios({
+	url: "/song/finds",
+	method: "post",
+	data: {
+		298838: "笑忘书 王菲",
+		abcdefg: "邮差 王菲"
+	}
+})
+
+// 返回：
+
+{
+	data: {
+		208838: obj,
+		abcdefg: obj,
+	},
+	result: 100,
+}
+
 ```
 
 

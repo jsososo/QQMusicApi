@@ -19,10 +19,11 @@ const request = async (obj, opts = {}) => {
       delete obj.data;
     }
 
+    const cookieObj = (Number(req.query.ownCookie) ? global.cookies : global.userCookie) || {};
     obj.headers = obj.headers || {};
     obj.xsrfCookieName = 'XSRF-TOKEN';
     obj.withCredentials = true;
-    obj.headers.Cookie = Object.keys(global.cookies).map((k) => `${k}=${global.cookies[k]}`).join('; ');
+    obj.headers.Cookie = Object.keys(cookieObj).map((k) => `${k}=${cookieObj[k]}`).join('; ');
 
     const res = await axios(obj);
 
