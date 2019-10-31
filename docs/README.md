@@ -37,6 +37,8 @@ $ npm start
 
 ## 更新记录
 
+19-10-29：🐝 搜索歌手，专辑信息查询
+
 19-10-15：👖 url 获取
 
 19-10-10：🤬 热搜词、关注歌手、关注粉丝列表
@@ -161,11 +163,15 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 `pageSize`: 一页返回数量，默认 20
 
-`t`: 搜索类型 默认为 0  // 0：单曲，2：歌单，7：歌词，8：专辑，12：mv
+`t`: 搜索类型 默认为 0  // 0：单曲，2：歌单，7：歌词，8：专辑，9：歌手，12：mv
+
+示例：[/search?key=周杰伦](http://api.qq.jsososo.com/search?key=周杰伦)
 
 ### 获取热搜词
 
 接口：`/search/hot`
+
+示例：[/search/hot](http://api.qq.jsososo.com/search/hot)
 
 返回示例：`k` 为热搜词，`n` 为搜索量
 
@@ -199,6 +205,8 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 这个接口就像是简化版的搜索，根据关键词获取到搜出的第一个歌曲，不过他会直接带上播放链接，参数为 `url`，
 如果没有则表示无法获取到播放链接。这个接口的作用是，对于其他平台的歌单如果需要获取到企鹅音乐的信息时，
 可以通过 歌名 + 歌手 + 专辑 等关键词获取大致的歌曲，当然这是并不能保障稳定的。
+
+示例：[/song/find?key=周杰伦%2f稻香](http://api.qq.jsososo.com/song/find?key=周杰伦%2f稻香)
 
 #### 批量获取
 
@@ -248,6 +256,8 @@ anxios({
 
 返回中 `mymusic` 为喜欢的音乐，`mydiss` 为用户创建的歌单，需要注意的是，喜欢的音乐中的歌单id为 `id`，歌单中的歌单id为 `dissid`
 
+示例：[/user/detail?id=123456](http://api.qq.jsososo.com/user/detail?id=123456)
+
 ### 歌单
 
 #### 1、获取歌单详情
@@ -269,11 +279,15 @@ anxios({
 }
 ```
 
+示例：[/songlist?id=2429907335](http://api.qq.jsososo.com/songlist?id=2429907335)
+
 #### 2、获取歌单分类
 
 接口：`/songlist/category`
 
 这个接口没有参数，返回几种类型下的小分类 `id` 和 `name`，不同于歌手的筛选，搜索歌单时只能用一个 `id`，不能用且关系。
+
+示例：[/songlist/category](http://api.qq.jsososo.com/songlist/category)
 
 #### 3、根据分类获取歌单
 
@@ -286,6 +300,8 @@ anxios({
 `sort`: 默认是 5，// 5: 推荐，2: 最新，其他数字的排列值最后都会返回推荐
 
 `category`: 分类 id，默认 10000000 （全部），其他值从上面的分类接口获取
+
+示例：[/songlist/list](http://api.qq.jsososo.com/songlist/list)
 
 ### 歌曲信息
 
@@ -301,6 +317,9 @@ anxios({
 ```
 "https://y.gtimg.cn/music/photo_new/T002R300x300M000" + mid
 ```
+
+示例：[/song?songmid=0039MnYb0qxYhV](http://api.qq.jsososo.com/song?songmid=0039MnYb0qxYhV)
+
 ### 歌词
 
 接口：`/lyric`
@@ -311,6 +330,10 @@ anxios({
 
 返回的接口中 `lyric` 和 `trans` 分别是歌词和翻译，转成了base64，这里node进行了解码。
 
+示例：[/lyric?songmid=0039MnYb0qxYhV](http://api.qq.jsososo.com/lyric?songmid=0039MnYb0qxYhV)
+
+示例：[/lyric?songmid=000b3wiQ3z0VbG](http://api.qq.jsososo.com/lyric?songmid=000b3wiQ3z0VbG)
+
 ### 推荐歌单
 
 #### 1、为你推荐歌单
@@ -318,6 +341,8 @@ anxios({
 接口：`/recommend/playlist/u`
 
 这个接口不需要参数，需要注意，和下面这个接口的数据格式不同
+
+示例：[/recommend/playlist/u](http://api.qq.jsososo.com/recommend/playlist/u)
 
 #### 2、按分类推荐歌单
 
@@ -331,6 +356,8 @@ anxios({
 
 `pageSize`: 每页返回数量，默认为 20
 
+示例：[/recommend/playlist](http://api.qq.jsososo.com/recommend/playlist)
+
 ### 最新推荐
 
 #### 1、新歌推荐
@@ -342,6 +369,8 @@ anxios({
 `type`: 地区分类，默认为 0 // 0: 最新 1：内地，2：港台，3：欧美，4：韩国，5：日本
 
 ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新专和mv接口做兼容，所以做了改动
+
+示例：[/new/songs](http://api.qq.jsososo.com/new/songs)
 
 #### 2、新碟推荐（专辑）
 
@@ -355,6 +384,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 这里和官方接口的参数是一致的
 
+示例：[/new/album](http://api.qq.jsososo.com/new/album)
+
 #### 3、新 MV 推荐
 
 接口：`/new/mv`
@@ -364,6 +395,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 `type`: 类型，默认为 0 // 0: 精选 1：内地，2：港台，3：欧美，4：韩国，5：日本
 
 官方这个参数就更乱了，中英结合，还把日本拼成了 janpan，真是捉鸡
+
+示例：[/new/mv](http://api.qq.jsososo.com/new/mv)
 
 ### 歌手
 
@@ -377,6 +410,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 获取歌手的一些详细信息介绍
 
+示例：[/singer/desc?singermid=0025NhlN2yWrP4](http://api.qq.jsososo.com/singer/desc?singermid=0025NhlN2yWrP4)
+
 #### 2、获取热门歌曲
 
 接口：`/singer/songs`
@@ -386,6 +421,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 `singermid`: 必填
 
 `num`: 返回歌曲数量
+
+示例：[/singer/songs?singermid=0025NhlN2yWrP4](http://api.qq.jsososo.com/singer/songs?singermid=0025NhlN2yWrP4)
 
 #### 3、获取歌手专辑
 
@@ -399,6 +436,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 `pageSize`: 默认 20
 
+示例：[/singer/album?singermid=0025NhlN2yWrP4](http://api.qq.jsososo.com/singer/album?singermid=0025NhlN2yWrP4)
+
 #### 4、获取mv
 
 接口：`/singer/mv`
@@ -411,6 +450,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 `pageSize`: 默认 20
 
+示例：[/singer/mv?singermid=0025NhlN2yWrP4](http://api.qq.jsososo.com/singer/mv?singermid=0025NhlN2yWrP4)
+
 #### 5、相似歌手
 
 接口：`/singer/sim`
@@ -421,11 +462,15 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 官方接口是有返回数量参数的，但是最多只返回10个，所以这里就写死返回 10 个
 
+示例：[/singer/sim?singermid=0025NhlN2yWrP4](http://api.qq.jsososo.com/singer/sim?singermid=0025NhlN2yWrP4)
+
 #### 6、获取歌手分类
 
 接口：`/singer/category`
 
 这个接口没有参数，会返回 地区：`area`，类型：`genre`，首字母：`index`，性别/组合：`sex` 这些分类项的各个数据
+
+示例：[/singer/category](http://api.qq.jsososo.com/singer/category)
 
 #### 7、根据分类获取歌手列表
 
@@ -445,6 +490,30 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 这个接口固定返回 80 条信息
 
+示例：[/singer/list](http://api.qq.jsososo.com/singer/list)
+
+### 专辑
+
+#### 1、获取专辑信息
+
+接口：`/album`
+
+参数：
+
+`albummid`: 必填
+
+示例：[/album?albummid=002MAeob3zLXwZ](http://api.qq.jsososo.com/album?albummid=002MAeob3zLXwZ)
+
+#### 2、获取专辑内的歌曲
+
+接口：`/album/songs`
+
+参数：
+
+`albummid`: 必填
+
+示例：[/album/songs?albummid=002MAeob3zLXwZ](http://api.qq.jsososo.com/album/songs?albummid=002MAeob3zLXwZ)
+
 ### 获取评论
 
 接口：`/comment`
@@ -461,6 +530,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 当 `pageNo` 为 1 且 `type` 为 0 时，会返回15条热评 `hot_comment`
 
+示例：[/comment?id=97773](http://api.qq.jsososo.com/comment?id=97773)
+
 ### 电台
 
 #### 1、电台分类
@@ -468,6 +539,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 接口：`/radio/category`
 
 返回电台场景分类以及场景下的各个电台
+
+示例：[/radio/category](http://api.qq.jsososo.com/radio/category)
 
 #### 2、获取电台歌曲
 
@@ -478,6 +551,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 `id`: 电台id，从上面的分类接口中获取
 
 获取电台中歌曲，其中个性电台需要登陆 cookie
+
+示例：[/radio?id=568](http://api.qq.jsososo.com/radio?id=568)
 
 ### MV
 
@@ -491,6 +566,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 返回 `info` 为 MV 信息，`recommend` 为相关推荐的 MV
 
+示例：[/mv?id=t0032kwa29w](http://api.qq.jsososo.com/mv?id=t0032kwa29w)
+
 #### 2、获取 MV 播放链接
 
 接口：`/mv/url`
@@ -501,11 +578,15 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 返回的链接都是可以直接播放的完整mv视频
 
+示例：[/mv/url?id=t0032kwa29w](http://api.qq.jsososo.com/mv/url?id=t0032kwa29w)
+
 #### 3、获取 MV 分类
 
 接口：`/mv/category`
 
 和获取歌手分类接口类似
+
+示例：[/mv/category](http://api.qq.jsososo.com/mv/category)
 
 #### 4、根据分类获取 MV 列表
 
@@ -520,6 +601,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 `area`: 地区，默认 15 全部，具体数值从上面分类接口获取
 
 `version`: MV 类型，默认 7 全部，具体数值从上面分类接口获取
+
+示例：[/mv/list](http://api.qq.jsososo.com/mv/list)
 
 ### 关注、粉丝
 

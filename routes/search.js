@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
     pageNo = 1,
     pageSize = 20,
     key,
-    t = 0, // 0：单曲，2：歌单，7：歌词，8：专辑，12：mv
+    t = 0, // 0：单曲，2：歌单，7：歌词，8：专辑，9：歌手，12：mv
     raw,
   } = req.query;
   let total = 0;
@@ -31,6 +31,7 @@ router.get('/', async (req, res) => {
     7: 'lyric',
     8: 'album',
     12: 'mv',
+    9: 'singer',
   };
 
   if (!typeMap[t]) {
@@ -78,6 +79,7 @@ router.get('/', async (req, res) => {
     7: 'lyric',
     8: 'album',
     12: 'mv',
+    9: 'singer',
   };
   const searchResult = (keyMap[t] ? result.data[keyMap[t]] : result.data) || [];
   const { list, curpage, curnum, totalnum, page_no, num_per_page, display_num } = searchResult;

@@ -113,7 +113,8 @@ const getUrls = async (req, res) => {
     await reqFun();
   }
 
-  const domain = result.req_0.data.sip[0];
+  // const domain = result.req_0.data.sip[0];
+  const domain = 'http://183.131.60.16/amobile.music.tc.qq.com/';
 
   const data = {};
   result.req_0.data.midurlinfo.forEach((item) => {
