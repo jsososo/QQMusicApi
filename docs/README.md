@@ -658,3 +658,27 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 `operation`: 操作，1：关注，2：取消关注，默认为 1
 
+### 接口调用统计
+
+接口的数据统计包含系统、ip、路径、浏览器等信息，已经忽略掉 node 接口自身调用的情况，数据为用 json 方式存储 （我会说是因为我不会用数据库嘛？）
+
+#### 1、获取数据统计
+
+接口： `/data`
+
+参数
+
+`type`: 默认 ip，可选：ip, browser, browserVersion, browserVersionDetail, os, osVersion, osVersionDetail, path, url, host
+
+`startTime`: 默认当前时间
+
+`endTime`: 默认当前时间
+
+这个接口会返回各个数据的统计结果
+
+#### 2、保存数据
+
+接口： `/data/save`
+
+这个接口没有参数，默认情况下每三个小时将数据存储为 `data/allData.json` 文件，如果直接 kill 或 重启 项目时，
+在这个时间节点与上次保存之间产生的数据会出现丢失，因此在重启时尽量记得调用一下这个接口

@@ -33,6 +33,7 @@ const dataRecord = (req, res, next) => {
     dataStatistics.date[nowYMD] = [];
   }
   dataStatistics.date[nowYMD].push(data);
+  dataStatistics.recordTime = now.format('YYYY-MM-DD HH:mm:ss');
 
   next();
 };
