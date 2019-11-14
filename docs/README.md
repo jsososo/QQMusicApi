@@ -604,6 +604,41 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 示例：[/mv/list](http://api.qq.jsososo.com/mv/list)
 
+### 排行榜
+
+#### 1、获取榜单列表
+
+接口：`/top/category`
+
+这个接口列出了几个榜单的分类，各分类下的榜单名和榜单 id
+
+示例：[/top/category](http://api.qq.jsososo.com/top/category)
+
+#### 2、获取榜单详情
+
+接口：`/top`
+
+参数
+
+`id`: 默认 4，从上面的列表中取值
+
+`pageNo`: 默认 100 // 部分接口不支持这个字段，所以这里默认选择100
+
+`time`: 默认当前时间
+
+返回说明
+
+`time`: 当前榜单的发布时间，可能是天，也可能是周
+
+`timeType`: 当前榜单的时间格式 `YYYY_W` 或 `YYYY-MM-DD`
+
+`rank`: 在榜单的排名
+
+`rankType`: 1 上升，2 减少，3 持平，6 上升百分比
+
+`rankValue`: 排名改变值
+
+
 ### 关注、粉丝
 
 #### 1、获取关注的歌手列表

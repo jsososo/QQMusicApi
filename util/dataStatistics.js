@@ -9,9 +9,9 @@ const dataRecord = (req, res, next) => {
   const { dataStatistics } = global;
   const ip = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddres || req.socket.remoteAddress || '';
 
-  // 自己调用自己接口的方法就算了
+  // 找不到 ip 指向本地的就算了
   if (ip === '::ffff:127.0.0.1') {
-    next();
+    return next();
   }
   const data = {
     browser: agent.family,
