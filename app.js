@@ -4,8 +4,25 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const fs = require('fs');
+const dataRecord = require('./util/dataStatistics').dataRecord;
+const dataSave = require('./util/dataStatistics').dataSave;
+const jsonFile = require('jsonfile');
+const moment = require('moment');
 
 const app = express();
+
+jsonFile.readFile('data/allData.json')
+  .then((res) => {
+    global.dataStatistics = res;
+  }, (err) => {
+    if (err.code === 'ENOENT') {
+      global.dataStatistics = { date: {}, recordTime: moment().format('YYYY-MM-DD HH:mm:ss') };
+      jsonFile.writeFile('data/allData.json', {});
+    }
+  });
+
+// 每三小时存一下数据
+setInterval(dataSave, 3600000 * 3);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -17,8 +34,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(dataRecord);
+
 fs.readdirSync(path.join(__dirname, 'routes')).reverse().forEach(file => {
-  const filename = file.replace(/\.js$/, '')
+  const filename = file.replace(/\.js$/, '');
   app.use(`/${filename}`, (req, res, next) => {
     global.cookies = req.cookies;
     global.response = res;

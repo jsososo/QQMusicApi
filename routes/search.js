@@ -106,7 +106,9 @@ router.get('/', async (req, res) => {
       key: keyword || key,
       t,
       type: typeMap[t],
-    }
+    },
+    // header: req.header(),
+    // req: JSON.parse(JSON.stringify(req)),
   });
 });
 
