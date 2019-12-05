@@ -129,8 +129,74 @@ const getUrls = async (req, res) => {
   });
 };
 
+// 批量获取歌曲 url 新版获取 url 的方法
+const getUrlNew = async (req, res) => {
+  const obj = { ...req.query, ...req.body };
+
+  const { id, type = '128' } = obj;
+  const typeMap = {
+    m4a: {
+      s: 'C400',
+      e: '.m4a',
+
+    },
+    128: {
+      s: 'M500',
+      e: '.mp3',
+    },
+    320: {
+      s: 'M800',
+      e: '.mp3',
+    },
+    ape: {
+      s: 'A000',
+      e: '.ape',
+    },
+    flac: {
+      s: 'F000',
+      e: '.flac',
+    }
+  };
+  const typeObj = typeMap[type];
+
+  if (!typeObj) {
+    return res.send({
+      result: 500,
+      errMsg: 'type 传错了，看看文档去',
+    })
+  }
+  const file = `${typeObj.s}${id}${typeObj.e}`;
+  const guid = (Math.random() * 10000000).toFixed(0);
+
+  const url = `http://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg?g_tk=1722049047&loginUin=956581739&needNewCode=0&cid=205361747&uin=323&songmid=${id}&filename=${file}&guid=${guid}`;
+  const result = await request(url);
+  let vkey = '';
+
+  if (result.data && result.data.items && result.data.items[0]) {
+    vkey = result.data.items[0].vkey;
+    if (vkey.indexOf(' ') > -1) {
+      vkey = '';
+    }
+  }
+  if (!vkey) {
+    return res.send({
+      result: 400,
+      errMsg: '获取播放链接出错',
+    })
+  }
+
+  res.send({
+    data: `http://124.89.197.18/amobile.music.tc.qq.com/${file}?guid=${guid}&vkey=${vkey}&uin=323&fromtag=66`,
+    result: 100,
+  });
+};
+
 router.get('/urls', getUrls);
 
 router.post('/urls', getUrls);
+
+router.get('/url', getUrlNew);
+
+router.get('/url', getUrlNew);
 
 module.exports = router;

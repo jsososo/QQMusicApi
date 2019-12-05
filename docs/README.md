@@ -37,6 +37,10 @@ $ npm start
 
 ## 更新记录
 
+19-12-05：🏎️ 获取 mp3 和无损 ape、flac 等格式链接
+
+19-11-14：🐄 排行榜
+
 19-10-29：🐝 搜索歌手，专辑信息查询
 
 19-10-15：👖 url 获取
@@ -150,6 +154,21 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 }
 
 ```
+
+### 下载链接
+
+接口：`/song/url`
+
+参数：
+
+`id`: songmid
+
+`type`: 默认 128 // 128：mp3 128k，320：mp3 320k，m4a：m4a格式 128k，flac：flac格式 无损，ape：ape格式 无损
+
+这个接口跟上个接口一样，也是依赖服务器的 Cookie 信息的，不支持批量获取，不一定是全部的歌曲都有无损、高品的，
+要注意结合 size320，sizeape，sizeflac 等参数先判断下是否有播放链接
+
+示例：[/song/url?id=0039MnYb0qxYhV](http://api.qq.jsososo.com/song/url?id=0039MnYb0qxYhV)
 
 ### 搜索
 
