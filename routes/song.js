@@ -133,7 +133,7 @@ const getUrls = async (req, res) => {
 const getUrlNew = async (req, res) => {
   const obj = { ...req.query, ...req.body };
 
-  const { id, type = '128' } = obj;
+  const { id, type = '128', mediaId = id } = obj;
   const typeMap = {
     m4a: {
       s: 'C400',
@@ -165,7 +165,7 @@ const getUrlNew = async (req, res) => {
       errMsg: 'type 传错了，看看文档去',
     })
   }
-  const file = `${typeObj.s}${id}${typeObj.e}`;
+  const file = `${typeObj.s}${mediaId}${typeObj.e}`;
   const guid = (Math.random() * 10000000).toFixed(0);
 
   const url = `http://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg?g_tk=1722049047&loginUin=956581739&needNewCode=0&cid=205361747&uin=323&songmid=${id}&filename=${file}&guid=${guid}`;
