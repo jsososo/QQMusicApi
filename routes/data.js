@@ -1,46 +1,49 @@
 const express = require('express');
 const router = express.Router();
-const request  = require('../util/request');
-const jsonFile = require('jsonfile');
-const dataSave = require('../util/dataStatistics').dataSave;
-const moment = require('moment');
+const ipPrivateKey = require('../util/privateKey').ipPrivateKey;
 
 router.get('/', async (req, res) => {
   const now = new Date();
-  let { type = 'ip', startTime = now, endTime = now } = req.query;
-  const data = {};
-  const endStr = moment(endTime).format('YYYYMMDD');
-
-  let time = moment(startTime).format('YYYYMMDD');
-  do {
-    const list = global.dataStatistics.date[time] || [];
-    list.forEach((obj) => {
-      const val = obj[type];
-      if (!data[val]) {
-        data[val] = 1;
-      } else {
-        data[val] += 1;
-      }
-    });
-
-    time = moment(time).add(1, 'd').format('YYYYMMDD');
-  } while (time <= endStr);
+  let { type = 'ip', startTime = now, endTime = now, condition = '{}' } = req.query;
+  const data = global.dataStatistics.getRecord({ startTime, endTime, type, condition });
 
   res.send({
     result: 100,
     data,
-    recordTime: global.dataStatistics.recordTime,
   })
 });
 
-router.get('/save', (req, res) => {
-  dataSave()
-    .then(() => {
-      res.send({
-        result: 100,
-        data: '操作成功',
-      })
+const listHandle = ({ func, type, req, res }) => {
+  const { dataStatistics: dataHandle } = global;
+  const { ip, key } = req.query;
+  if (key !== ipPrivateKey || !ip) {
+    return res.send({
+      result: 400,
+      data: '你想干嘛？'
     })
+  }
+  dataHandle[func](ip, type);
+  res.send({
+    result: 100,
+    data: '就当成功了吧',
+  })
+};
+
+router.get('/addWhiteList', (req, res) => listHandle({ func: 'addList', req, res, type: 'whiteList'}));
+router.get('/addBlackList', (req, res) => listHandle({ func: 'addList', req, res, type: 'blackList'}));
+router.get('/removeWhiteList', (req, res) => listHandle({ func: 'removeList', req, res, type: 'whiteList'}));
+router.get('/removeBlackList', (req, res) => listHandle({ func: 'removeList', req, res, type: 'blackList'}));
+router.get('/whiteList', (req, res) => {
+  res.send({
+    result: 100,
+    data: global.dataStatistics.getList('whiteList'),
+  })
+});
+router.get('/blackList', (req, res) => {
+  res.send({
+    result: 100,
+    data: global.dataStatistics.getList('blackList'),
+  })
 });
 
 module.exports = router;

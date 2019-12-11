@@ -4,25 +4,22 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const fs = require('fs');
-const dataRecord = require('./util/dataStatistics').dataRecord;
-const dataSave = require('./util/dataStatistics').dataSave;
+const DataStatistics = require('./util/dataStatistics');
 const jsonFile = require('jsonfile');
-const moment = require('moment');
 
 const app = express();
+const dataHandle = new DataStatistics();
+global.dataStatistics = dataHandle;
 
-jsonFile.readFile('data/allData.json')
+jsonFile.readFile('data/cookie.json')
   .then((res) => {
-    global.dataStatistics = res;
+    global.userCookie = res;
   }, (err) => {
-    if (err.code === 'ENOENT') {
-      global.dataStatistics = { date: {}, recordTime: moment().format('YYYY-MM-DD HH:mm:ss') };
-      jsonFile.writeFile('data/allData.json', {});
-    }
+    global.userCookie = {}
   });
 
 // 每三小时存一下数据
-setInterval(dataSave, 3600000 * 3);
+setInterval(dataHandle.saveInfo, 3600000 * 3);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,7 +31,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(dataRecord);
+app.use((req, res, next) => dataHandle.record(req, res, next));
 
 fs.readdirSync(path.join(__dirname, 'routes')).reverse().forEach(file => {
   const filename = file.replace(/\.js$/, '');

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const request  = require('../util/request');
+const jsonFile = require('jsonfile');
 
 router.get('/cookie', (req, res) => {
   res.send({
@@ -20,6 +21,7 @@ router.post('/setCookie', (req, res) => {
     global.userCookie[arr[0]] = arr[1];
   });
 
+  jsonFile.writeFile('data/cookie.json', global.userCookie);
   res.send({
     result: 100,
     data: '操作成功',
