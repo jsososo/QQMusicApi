@@ -19,7 +19,7 @@ jsonFile.readFile('data/cookie.json')
   });
 
 // 每5分钟存一下数据
-setInterval(dataHandle.saveInfo, 60000 * 5);
+setInterval(() => dataHandle.saveInfo(), 1000 * 5);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
