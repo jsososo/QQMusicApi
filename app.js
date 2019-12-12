@@ -18,8 +18,8 @@ jsonFile.readFile('data/cookie.json')
     global.userCookie = {}
   });
 
-// 每三小时存一下数据
-setInterval(dataHandle.saveInfo, 3600000 * 3);
+// 每5分钟存一下数据
+setInterval(dataHandle.saveInfo, 60000 * 5);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

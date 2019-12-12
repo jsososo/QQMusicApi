@@ -54,6 +54,7 @@ class DataStatistics {
     }
     jsonFile.writeFile(`data/record/${nt}.json`, this.allData[nt] || {});
     jsonFile.writeFile('data/tempList.json', this.tempList || {});
+    this.lastSaveTime = moment();
   }
 
   // ip 记录中间件
