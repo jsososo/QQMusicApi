@@ -40,6 +40,8 @@ $ npm start
 
 ## 更新记录
 
+19-12-18：🍒 批量获取歌曲信息、top排行榜数据优化
+
 19-12-11：🚀 高频ip黑白名单
 
 19-12-05：🏎️ 获取 mp3 和无损 ape、flac 等格式链接
@@ -332,6 +334,8 @@ anxios({
 
 ### 歌曲信息
 
+#### 单个获取
+
 接口：`/song`
 
 参数：
@@ -342,10 +346,22 @@ anxios({
 下面为专辑封面图片的路径，在搜索接口中也能获取到这个参数。
 
 ```
-"https://y.gtimg.cn/music/photo_new/T002R300x300M000" + mid
+`https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg`
 ```
 
 示例：[/song?songmid=0039MnYb0qxYhV](http://api.qq.jsososo.com/song?songmid=0039MnYb0qxYhV)
+
+#### 批量获取
+
+接口：`/song/batch`
+
+参数：
+
+`songmids`: 必填
+
+这个接口本质为上一个接口的批量调用
+
+示例：[/song/batch?songmids=001PLl3C4gPSCI,0039MnYb0qxYhV](http://api.qq.jsososo.com/song/batch?songmids=001PLl3C4gPSCI,0039MnYb0qxYhV)
 
 ### 歌词
 
@@ -649,7 +665,7 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 `id`: 默认 4，从上面的列表中取值
 
-`pageNo`: 默认 100 // 部分接口不支持这个字段，所以这里默认选择100
+`pageSize`: 默认 100 // 部分接口不支持这个字段，所以这里默认选择100
 
 `time`: 默认当前时间
 
@@ -722,7 +738,8 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 ### 接口调用统计
 
-接口的数据统计包含系统、ip、路径、浏览器等信息，已经忽略掉 node 接口自身调用的情况，数据为用 json 方式存储 （我会说是因为我不会用数据库嘛？）
+接口的数据统计包含系统、ip、路径、浏览器等信息，已经忽略掉 node 接口自身调用的情况，数据为用 json 方式存储 （我会说是因为我不会用数据库嘛
+`/data` 下还包含了很多其他接口，不过大部分都是用户不需要的，给管理员调用的，所以大家在源码里自己探索吧
 
 #### 1、获取数据统计
 
@@ -730,17 +747,10 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 参数
 
-`type`: 默认 ip，可选：ip, browser, browserVersion, browserVersionDetail, os, osVersion, osVersionDetail, path, url, host
+`type`: 默认 ip，可选：ip, browser, browserVersion, os, osVersion, path, url, host
 
 `startTime`: 默认当前时间
 
 `endTime`: 默认当前时间
 
 这个接口会返回各个数据的统计结果
-
-#### 2、保存数据
-
-接口： `/data/save`
-
-这个接口没有参数，默认情况下每三个小时将数据存储为 `data/allData.json` 文件，如果直接 kill 或 重启 项目时，
-在这个时间节点与上次保存之间产生的数据会出现丢失，因此在重启时尽量记得调用一下这个接口

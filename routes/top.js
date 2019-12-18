@@ -51,7 +51,7 @@ router.get('/', async (req, res, next) => {
           titleDetail: resData.data.titleDetail,
           desc: resData.data.intro,
         },
-        list: resData.data.song,
+        list: resData.songInfoList,
         total: resData.data.totalNum,
         listenNum: resData.data.listenNum,
         time: resData.data.period,

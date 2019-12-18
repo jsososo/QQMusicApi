@@ -36,6 +36,41 @@ router.get('/', async (req, res, next) => {
   })
 });
 
+router.get('/batch', async (req, res) => {
+  const { songmids } = req.query;
+  if (!songmids) {
+    return res.send({
+      result: 500,
+      errMsg: 'songmids 不能为空',
+    })
+  }
+  const midArr = songmids.split(',');
+  const resultObj = {};
+  let count = 0;
+  const finishCb = () => {
+    if (count !== midArr.length)
+      return;
+
+    res.send({
+      result: 100,
+      data: resultObj,
+    });
+  };
+  midArr.forEach((mid) => {
+    request(`http://127.0.0.1:3300/song?songmid=${mid}`)
+      .then((res) => {
+        if (res.result === 100) {
+          resultObj[mid] = res.data;
+        }
+        count += 1;
+        finishCb();
+      }, (err) => {
+        count += 1;
+        finishCb();
+      })
+  })
+});
+
 router.get('/find', async (req, res) => {
   const { key } = req.query;
   const obj = await request(`http://127.0.0.1:3300/search?key=${key}&pageNo=1`);
