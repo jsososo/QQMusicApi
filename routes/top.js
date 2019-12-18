@@ -51,7 +51,12 @@ router.get('/', async (req, res, next) => {
           titleDetail: resData.data.titleDetail,
           desc: resData.data.intro,
         },
-        list: resData.songInfoList,
+        list: resData.data.song.map((o, i) => (
+          {
+            ...o,
+            ...(resData.songInfoList[i]),
+          }
+        )),
         total: resData.data.totalNum,
         listenNum: resData.data.listenNum,
         time: resData.data.period,
