@@ -40,6 +40,8 @@ $ npm start
 
 ## 更新记录
 
+19-12-23：🦑 排行榜相关接口优化、新增相似歌曲、相关歌单、相关mv
+
 19-12-18：🍒 批量获取歌曲信息、top排行榜数据优化
 
 19-12-11：🚀 高频ip黑白名单
@@ -363,6 +365,39 @@ anxios({
 
 示例：[/song/batch?songmids=001PLl3C4gPSCI,0039MnYb0qxYhV](http://api.qq.jsososo.com/song/batch?songmids=001PLl3C4gPSCI,0039MnYb0qxYhV)
 
+#### 相似歌曲
+接口：`/song/similar`
+
+参数：
+
+`id`: 歌曲 `songid` 必填
+
+返回相似歌曲列表
+
+示例：[/song/similar?id=5105986](http://api.qq.jsososo.com/song/similar?id=5105986)
+
+#### 相关歌单
+接口：`/song/playlist`
+
+参数：
+
+`id`: 歌曲 `songid` 必填
+
+返回相关歌单列表
+
+示例：[/song/playlist?id=5105986](http://api.qq.jsososo.com/song/playlist?id=5105986)
+
+#### 相关MV
+接口：`/song/mv`
+
+参数：
+
+`id`: 歌曲 `songid` 必填
+
+返回相关mv列表
+
+示例：[/song/mv?id=5105986](http://api.qq.jsososo.com/song/mv?id=5105986)
+
 ### 歌词
 
 接口：`/lyric`
@@ -653,7 +688,11 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 接口：`/top/category`
 
-这个接口列出了几个榜单的分类，各分类下的榜单名和榜单 id
+参数：
+
+`showDetail`: 是否显示前三歌曲简单信息和榜单介绍，0，不显示，1 显示，默认 0
+
+这个接口列出了几个榜单的分类，包含了榜单名、榜单 id、更新时间、播放量，（榜单介绍、前三歌曲非必传回）
 
 示例：[/top/category](http://api.qq.jsososo.com/top/category)
 
@@ -667,7 +706,9 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 `pageSize`: 默认 100 // 部分接口不支持这个字段，所以这里默认选择100
 
-`time`: 默认当前时间
+`period`: 榜单的时间，从上面的列表中取值，非必填
+
+`time`: 默认当前时间，如果有 `period`，此参数无效
 
 返回说明
 
@@ -680,6 +721,10 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 `rankType`: 1 上升，2 减少，3 持平，4 新歌，6 上升百分比
 
 `rankValue`: 排名改变值
+
+传入的 `time`、`period`并非必定与传回参数相同，比如，当榜单最新时间为 `2019_49`, 而传入 `period=2019_50`时，会返回 `2019_49`的榜单，
+虽然这里不传或传入错误的 `period` 也会返回正确的数值，但是实际是通过第一次请求返回的结果来验证 `period` 是否正确，如果不正确会再进行第二次请求，
+因此会造成返回的比较慢，尽量都传入上一个接口中返回的 `period`
 
 
 ### 关注、粉丝

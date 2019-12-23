@@ -234,4 +234,142 @@ router.get('/url', getUrlNew);
 
 router.get('/url', getUrlNew);
 
+// 相似歌曲
+router.get('/similar', async (req, res) => {
+  const { id, raw } = req.query;
+  if (!id) {
+    return res.send({
+      result: 500,
+      errMsg: 'id ?'
+    })
+  }
+  const result = await request({
+    url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
+    data: JSON.stringify({"comm":{
+        "g_tk":5381,
+        "format":"json",
+        "inCharset":"utf-8",
+        "outCharset":"utf-8",
+        "notice":0,
+        "platform":"h5",
+        "needNewCode":1
+      },
+      "simsongs":{
+        "module":"rcmusic.similarSongRadioServer",
+        "method":"get_simsongs",
+        "param":{
+          "songid":Number(id)
+        }
+      }}),
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }, {
+    dataType: 'raw',
+  });
+
+  if (Number(raw)) {
+    return res.send(result);
+  }
+  return res.send({
+    result: 100,
+    data: result.simsongs.data.songInfoList,
+  });
+});
+
+// 相关歌单
+router.get('/playlist', async (req, res) => {
+  const { id, raw } = req.query;
+  if (!id) {
+    return res.send({
+      result: 500,
+      errMsg: 'id ?'
+    })
+  }
+  const result = await request({
+    url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
+    data: JSON.stringify({"comm":{
+        "g_tk":5381,
+        "format":"json",
+        "inCharset":"utf-8",
+        "outCharset":"utf-8",
+        "notice":0,
+        "platform":"h5",
+        "needNewCode":1
+      },
+      "gedan":{
+        "module":"music.mb_gedan_recommend_svr",
+        "method":"get_related_gedan",
+        "param":{
+          "sin":0,
+          "last_id":0,
+          "song_type":1,
+          "song_id":Number(id)
+        }
+      }}),
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }, {
+    dataType: 'raw',
+  });
+
+  if (Number(raw)) {
+    return res.send(result);
+  }
+  return res.send({
+    result: 100,
+    data: result.gedan.data.vec_gedan,
+  });
+});
+
+// 相关 mv
+router.get('/mv',  async (req, res) => {
+  const { id, raw } = req.query;
+  if (!id) {
+    return res.send({
+      result: 500,
+      errMsg: 'id ?'
+    })
+  }
+  const result = await request({
+    url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
+    data: JSON.stringify({"comm":{
+        "g_tk":5381,
+        "format":"json",
+        "inCharset":"utf-8",
+        "outCharset":"utf-8",
+        "notice":0,
+        "platform":"h5",
+        "needNewCode":1
+      },
+      "video":{
+        "module":"MvService.MvInfoProServer",
+        "method":"GetSongRelatedMv",
+        "param":{
+          "songid":id,
+          "songtype":1,
+          "lastmvid":0,
+          "num":10
+        }
+      }}),
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }, {
+    dataType: 'raw',
+  });
+
+  if (Number(raw)) {
+    return res.send(result);
+  }
+  return res.send({
+    result: 100,
+    data: result.video.data.list,
+  });
+});
+
 module.exports = router;

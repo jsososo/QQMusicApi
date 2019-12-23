@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const request  = require('../util/request');
-const cheerio = require('cheerio');
 const moment = require('moment');
 
 router.get('/', async (req, res, next) => {
-  const { id = 4, pageNo = 1, pageSize = 100, time = moment().format('YYYY-MM-DD'), raw } = req.query;
+  const { id = 4, pageNo = 1, pageSize = 100, period, time = moment().format('YYYY-MM-DD'), raw } = req.query;
 
   let timeType = '';
 
+  let postPeriod = (period || moment(time).format(timeType));
   switch (Number(id)) {
     case 4:
     case 27:
@@ -18,7 +18,8 @@ router.get('/', async (req, res, next) => {
     default:
       timeType = 'YYYY_W';
   }
-  const result = await request({
+
+  const reqFunc = async () => request({
     url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
     data: {
       g_tk: 5381,
@@ -30,14 +31,22 @@ router.get('/', async (req, res, next) => {
             "topId": Number(id),
             "offset": (pageNo - 1) * pageSize,
             "num": Number(pageSize),
-            "period": moment(time).format(timeType),
+            "period": postPeriod,
           },
         },
         "comm": { "ct": 24, "cv": 0 }
       }),
     },
   });
+  let result = await reqFunc();
 
+  if (result.detail.data.data.period !== postPeriod) {
+    postPeriod = result.detail.data.data.period;
+    result = await reqFunc();
+  }
+
+
+  if (result.detail.data.data.period)
   if (Number(raw)) {
     res.send(result);
   } else {
@@ -59,9 +68,8 @@ router.get('/', async (req, res, next) => {
         )),
         total: resData.data.totalNum,
         listenNum: resData.data.listenNum,
-        time: resData.data.period,
+        period: postPeriod,
         update: resData.data.updateTime,
-        timeType,
         id: resData.data.topId,
         pageNo,
         pageSize,
@@ -72,34 +80,29 @@ router.get('/', async (req, res, next) => {
 
 // 获取各种排行榜
 router.get('/category', async (req, res) => {
-  const result = await request('https://y.qq.com/n/yqq/toplist/4.html', { dataType: 'raw' });
-  const $ = cheerio.load(result);
-  const data = [];
-  // 每一个分类
-  $('.toplist_nav__list').each((cI, category) => {
-    const $category = cheerio.load(category);
-    const list = [];
-    // 分类下的每一个榜单
-    $category('.toplist_nav__item .toplist_nav__link').each((iI, item) => {
-      const hrefArr = item.attribs.href.split('.');
-      const value = hrefArr.pop();
+  const { raw, showDetail = 0 } = req.query;
+  const result = await request('https://u.y.qq.com/cgi-bin/musicu.fcg?_=1577086820633&data={%22comm%22:{%22g_tk%22:5381,%22uin%22:956581739,%22format%22:%22json%22,%22inCharset%22:%22utf-8%22,%22outCharset%22:%22utf-8%22,%22notice%22:0,%22platform%22:%22h5%22,%22needNewCode%22:1,%22ct%22:23,%22cv%22:0},%22topList%22:{%22module%22:%22musicToplist.ToplistInfoServer%22,%22method%22:%22GetAll%22,%22param%22:{}}}');
 
-      if (value === 'mv_toplist') {
-        return;
-      }
-      list.push({
-        value,
-        label: item.children[0].data,
-      })
-    });
-    data.push({
-      title: $category('.toplist_nav__tit').text(),
-      list,
-    });
-  });
+  if (Number(raw)) {
+    return res.send(result);
+  }
+
   res.send({
     result: 100,
-    data,
+    data: result.topList.data.group.map((o) => ({
+      title: o.groupName,
+      list: o.toplist.map((t) => ({
+        value: t.topId,
+        topId: t.topId,
+        label: t.title,
+        intro: Number(showDetail) ? t.intro : undefined,
+        period: t.period,
+        updateTime: t.updateTime,
+        listenNum: t.listenNum,
+        song: Number(showDetail) ? t.song : undefined,
+        picUrl: t.headPicUrl,
+      }))
+    })),
   })
 });
 
