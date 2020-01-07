@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
   }
 
   const url = {
-    2: 'http://c.y.qq.com/soso/fcgi-bin/client_music_search_songlist',
+    2: `https://c.y.qq.com/soso/fcgi-bin/client_music_search_songlist?remoteplace=txt.yqq.playlist&page_no=${pageNo - 1}&num_per_page=${pageSize}&query=${key}`,
     // 3: 'http://c.y.qq.com/soso/fcgi-bin/client_search_user',
   }[t] || 'http://c.y.qq.com/soso/fcgi-bin/client_search_cp';
 
@@ -47,6 +47,7 @@ router.get('/', async (req, res) => {
     p: pageNo, // 第几页
     w: key, // 搜索关键词
     cr: 1, // 不知道这个参数什么意思，但是加上这个参数你会对搜索结果更满意的
+    g_tk: 5381,
     t,
   };
 
@@ -66,6 +67,8 @@ router.get('/', async (req, res) => {
       Referer: 'https://y.qq.com'
     }
   });
+
+  console.log(result);
 
   if (Number(raw)) {
     return res.send(result);
