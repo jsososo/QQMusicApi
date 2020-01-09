@@ -77,6 +77,13 @@ class DataStatistics {
     if (ip === '::ffff:127.0.0.1' || ip === '::1') {
       return next();
     }
+
+    if ({ okhttp: true }[agent.family] || { Other: true }[os.family] ) {
+      return res.send({
+        result: 400,
+        errMsg: `自己起一个 node 服务 这么难？？?`
+      })
+    }
     const data = {
       browser: agent.family,
       browserVersion: `${agent.family} ${agent.major}.${agent.minor}.${agent.patch}`,

@@ -6,10 +6,12 @@ const logger = require('morgan');
 const fs = require('fs');
 const DataStatistics = require('./util/dataStatistics');
 const jsonFile = require('jsonfile');
+const Feedback = require('./util/feedback');
 
 const app = express();
 const dataHandle = new DataStatistics();
 global.dataStatistics = dataHandle;
+global.feedback = new Feedback();
 
 jsonFile.readFile('data/cookie.json')
   .then((res) => {
