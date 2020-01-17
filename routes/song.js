@@ -149,7 +149,7 @@ const getUrls = async (req, res) => {
   }
 
   // const domain = result.req_0.data.sip[0];
-  const domain = 'http://124.89.197.18/amobile.music.tc.qq.com/';
+  const domain = 'http://122.226.161.16/amobile.music.tc.qq.com/';
 
   const data = {};
   result.req_0.data.midurlinfo.forEach((item) => {
@@ -164,7 +164,7 @@ const getUrls = async (req, res) => {
   });
 };
 
-// 批量获取歌曲 url 新版获取 url 的方法
+// 新版获取 url 的方法
 const getUrlNew = async (req, res) => {
   const obj = { ...req.query, ...req.body };
 
@@ -221,7 +221,7 @@ const getUrlNew = async (req, res) => {
   }
 
   res.send({
-    data: `http://124.89.197.18/amobile.music.tc.qq.com/${file}?guid=${guid}&vkey=${vkey}&uin=323&fromtag=66`,
+    data: `http://122.226.161.16/amobile.music.tc.qq.com/${file}?guid=${guid}&vkey=${vkey}&uin=323&fromtag=66`,
     result: 100,
   });
 };
