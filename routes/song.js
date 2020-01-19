@@ -232,7 +232,7 @@ router.post('/urls', getUrls);
 
 router.get('/url', getUrlNew);
 
-router.get('/url', getUrlNew);
+router.post('/url', getUrlNew);
 
 // 相似歌曲
 router.get('/similar', async (req, res) => {

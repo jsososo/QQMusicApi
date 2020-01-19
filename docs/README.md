@@ -39,6 +39,7 @@ $ npm start
 
 
 ## 更新记录
+20-01-19：😢 [issue#9](https://github.com/jsososo/QQMusicApi/issues/9)
 
 20-01-17：👑 更新歌曲链接的域名ip
 
