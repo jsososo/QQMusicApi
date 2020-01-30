@@ -39,6 +39,9 @@ $ npm start
 
 
 ## 更新记录
+
+20-01-30：🍲 增加快速搜索接口、歌单、专辑、歌单、mv的评论获取
+
 20-01-19：😢 [issue#9](https://github.com/jsososo/QQMusicApi/issues/9)
 
 20-01-17：👑 更新歌曲链接的域名ip
@@ -191,6 +194,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 ### 搜索
 
+#### 搜索
 接口：`/search`
 
 参数：
@@ -205,7 +209,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 示例：[/search?key=周杰伦](http://api.qq.jsososo.com/search?key=周杰伦)
 
-### 获取热搜词
+#### 获取热搜词
 
 接口：`/search/hot`
 
@@ -229,6 +233,16 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
   ]
 }
 ```
+
+#### 快速搜索
+
+接口: `/quick`
+
+`key`: 关键词 必填
+
+快速给出少量符合条件的歌曲、mv、专辑、歌手
+
+示例：[/search/quick?key=周杰伦](http://api.qq.jsososo.com/search/quick?key=周杰伦)
 
 ### 查找音乐
 
@@ -605,13 +619,15 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 参数：
 
-`id`: singid 必填
+`id`: singid, albumid, tid, topid, vid  必填
 
 `pageNo`: 默认 1
 
 `pageSize`: 默认 20
 
 `type`: 默认 0  // 0：获取最新评论，1：获取热评
+
+`biztype`: 获取评论类型 1: 歌曲 2: 专辑 3: 歌单 4: 排行榜 5: mv
 
 当 `pageNo` 为 1 且 `type` 为 0 时，会返回15条热评 `hot_comment`
 

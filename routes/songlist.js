@@ -116,7 +116,6 @@ router.get('/move', async (req, res) => {
     try {
       const obj = await request(`http://music.jsososo.com/apiQ/song/find?key=${key}`);
       if (obj.data && obj.data.songmid) {
-        console.log(obj.data.songmid);
         list.push(obj.data.songmid);
         await request({
           url: 'http://127.0.0.1:3300/songlist/add',
@@ -126,7 +125,6 @@ router.get('/move', async (req, res) => {
           }
         });
       }
-      console.log(list.length, index, result.playlist.tracks.length);
     } catch (e) {
 
     }

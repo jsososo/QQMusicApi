@@ -68,8 +68,6 @@ router.get('/', async (req, res) => {
     }
   });
 
-  console.log(result);
-
   if (Number(raw)) {
     return res.send(result);
   }
@@ -128,6 +126,25 @@ router.get('/hot', async (req, res) => {
     result: 100,
     data: result.data.hotkey,
   });
+});
+
+// 快速搜索
+router.get('/quick', async (req, res) => {
+  const { raw, key } = req.query;
+  if (!key) {
+    return res.send({
+      result: 500,
+      errMsg: 'key ?'
+    })
+  }
+  const result = await request(`https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?key=${key}&g_tk=5381`);
+  if (Number(raw)) {
+    return res.send(result);
+  }
+  return res.send({
+    result: 100,
+    data: result.data,
+  })
 });
 
 module.exports = router;

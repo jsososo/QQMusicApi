@@ -3,7 +3,7 @@ const router = express.Router();
 const request  = require('../util/request');
 
 router.get('/', async (req, res, next) => {
-  const { id, pageNo = 1, pageSize = 20, type = 0, raw } = req.query;
+  const { id, pageNo = 1, pageSize = 20, type = 0, raw, biztype = 1 } = req.query;
 
   if (!id) {
     return res.send({
@@ -15,9 +15,15 @@ router.get('/', async (req, res, next) => {
   const result = await request({
     url: 'http://c.y.qq.com/base/fcgi-bin/fcg_global_comment_h5.fcg',
     data: {
-      biztype: 1,
+      biztype,
       topid: id,
-      cmd: [8, 6][type],
+      cmd: {
+        1: [8, 6], // 歌曲
+        2: [8, 9], // 专辑
+        3: [8, 9], // 歌单
+        4: [8, 9], // 排行榜
+        5: [8, 6], // mv
+      }[biztype][type],
       pagenum: pageNo - 1,
       pagesize: pageSize,
     }
@@ -31,7 +37,7 @@ router.get('/', async (req, res, next) => {
       data: {
         comment: result.comment,
         hotComment: result.hot_comment,
-        song: result.topic_name,
+        name: result.topic_name,
       },
     })
   }
