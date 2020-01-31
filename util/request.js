@@ -19,7 +19,7 @@ const request = async (obj, opts = {}) => {
       delete obj.data;
     }
 
-    const cookieObj = (Number(req.query.ownCookie) ? global.cookies : global.userCookie) || {};
+    const cookieObj = (Number(req.query.ownCookie) ? req.cookies : global.userCookie) || {};
     obj.headers = obj.headers || {};
     obj.xsrfCookieName = 'XSRF-TOKEN';
     obj.withCredentials = true;

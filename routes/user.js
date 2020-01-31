@@ -7,21 +7,49 @@ router.get('/cookie', (req, res) => {
   res.send({
     result: 100,
     data: {
-      cookie: global.cookies,
+      cookie: req.cookies,
       userCookie: global.userCookie,
     }
   });
 });
 
+router.get('/getCookie', (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    return res.send({
+      result: 500,
+      errMsg: 'id ?'
+    });
+  }
+
+  const cookieObj = global.allCookies[id] || [];
+  Object.keys(cookieObj).forEach((k) => {
+    res.cookie(k, cookieObj[k], { expires: new Date(Date.now() + 86400000)});
+  });
+  return res.send({
+    result: 100,
+    message: '设置 cookie 成功',
+  })
+});
+
 router.post('/setCookie', (req, res) => {
   const { data } = req.body;
-  global.userCookie = {};
+  const userCookie = {};
   data.split('; ').forEach((c) => {
     const arr = c.split('=');
-    global.userCookie[arr[0]] = arr[1];
+    userCookie[arr[0]] = arr[1];
   });
 
-  jsonFile.writeFile('data/cookie.json', global.userCookie);
+  global.allCookies[userCookie.uin] = userCookie;
+  jsonFile.writeFile('data/allCookies.json', global.allCookies);
+
+  // 这里写死我的企鹅号，作为存在服务器上的cookie
+  if (String(userCookie.uin) === '956581739') {
+    global.userCookie = userCookie;
+    jsonFile.writeFile('data/cookie.json', global.userCookie);
+  }
+
+
   res.send({
     result: 100,
     data: '操作成功',

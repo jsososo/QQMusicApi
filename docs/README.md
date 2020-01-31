@@ -30,6 +30,8 @@ $ npm start
 !> QQ音乐登陆的这个问题还是难绕过去，目前还是需要登陆并手动获取 [https://y.qq.com](https://y.qq.com) 的 `cookie`，注入网站或node，
 如果又什么更好的解决办法，欢迎大家提 pr 给我
 
+!> 另，可以通过 [qqmusic-cookie-porter](https://github.com/jsososo/qqmusic-cookie-porter) 这个 chrome 插件半自动获取 cookie
+
 !> 本项目仅供学习使用，请尊重版权，请勿利用此项目从事商业行为!
 本项目仅供学习使用，请尊重版权，请勿利用此项目从事商业行为!
 本项目仅供学习使用，请尊重版权，请勿利用此项目从事商业行为!
@@ -39,6 +41,8 @@ $ npm start
 
 
 ## 更新记录
+
+20-01-31：🐑 配合 chrome 插件自动获取存储 cookie
 
 20-01-30：🍲 增加快速搜索接口、歌单、专辑、歌单、mv的评论获取
 

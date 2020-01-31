@@ -13,6 +13,13 @@ const dataHandle = new DataStatistics();
 global.dataStatistics = dataHandle;
 global.feedback = new Feedback();
 
+jsonFile.readFile('data/allCookies.json')
+  .then((res) => {
+    global.allCookies = res;
+  }, (err) => {
+    global.allCookies = {};
+  });
+
 jsonFile.readFile('data/cookie.json')
   .then((res) => {
     global.userCookie = res;
@@ -38,7 +45,6 @@ app.use((req, res, next) => dataHandle.record(req, res, next));
 fs.readdirSync(path.join(__dirname, 'routes')).reverse().forEach(file => {
   const filename = file.replace(/\.js$/, '');
   app.use(`/${filename}`, (req, res, next) => {
-    global.cookies = req.cookies;
     global.response = res;
     global.req = req;
     req.query = {
