@@ -42,6 +42,8 @@ $ npm start
 
 ## 更新记录
 
+20-02-01：🥤 新增多个歌单操作相关接口
+
 20-01-31：🐑 配合 chrome 插件自动获取存储 cookie
 
 20-01-30：🍲 增加快速搜索接口、歌单、专辑、歌单、mv的评论获取
@@ -302,6 +304,8 @@ anxios({
 
 ### 用户信息
 
+#### 用户主页信息
+
 !> 这个接口是需要登陆 cookie 才能获取的，不然会返回 301，所以如果有误需要考虑一下可能是 cookie 过期
 
 接口：`/user/detail`
@@ -313,6 +317,18 @@ anxios({
 返回中 `mymusic` 为喜欢的音乐，`mydiss` 为用户创建的歌单，需要注意的是，喜欢的音乐中的歌单id为 `id`，歌单中的歌单id为 `dissid`
 
 示例：[/user/detail?id=123456](http://api.qq.jsososo.com/user/detail?id=123456)
+
+#### 用户创建的歌单
+
+接口：`/use/songlist`
+
+参数：
+
+`id`: qq号 必填
+
+这个接口比上一个接口更纯粹，只获取创建的歌单，且数据结构更简单，非必须登陆 Cookie，但如果用户未公开主页时，只有本人的 Cookie 才能获取数据
+
+示例：[/user/songlist?id=123456](http://api.qq.jsososo.com/user/songlist?id=123456)
 
 ### 歌单
 
@@ -358,6 +374,66 @@ anxios({
 `category`: 分类 id，默认 10000000 （全部），其他值从上面的分类接口获取
 
 示例：[/songlist/list](http://api.qq.jsososo.com/songlist/list)
+
+#### 4、歌曲id、mid的哈希表
+
+!> 这个接口强制使用浏览器传来的用户 Cookie 信息
+
+接口：`/songlist/map`
+
+参数：
+
+`dirid`: 默认 201 我喜欢的歌单
+
+这个接口只能获取用户自己创建的歌单且只会返回歌曲的 id 和 mid 的哈希表，不包含其他数据
+
+#### 5、添加歌曲到歌单
+
+!> 这个接口强制使用浏览器传来的用户 Cookie 信息
+
+接口：`/songlist/add`
+
+参数：
+
+`mid`: 歌曲 mid 必填，多个用 , 分割
+
+`dirid`: 必填
+
+#### 6、从歌单中移除歌曲
+
+!> 这个接口强制使用浏览器传来的用户 Cookie 信息
+
+接口：`/songlist/remove`
+
+参数：
+
+`id`: 歌曲 id 必填，多个用 , 分割
+
+`dirid`: 必填
+
+与上一个添加接口不同，移除需要 `id` 不是 `mid`
+
+#### 7、新建歌单
+
+!> 这个接口强制使用浏览器传来的用户 Cookie 信息
+
+接口：`/songlist/create`
+
+参数：
+
+`name`: 歌单名，不能为空
+
+如果歌单名重复，也会报错
+
+#### 8、删除歌单
+
+!> 这个接口强制使用浏览器传来的用户 Cookie 信息
+
+接口：`/songlist/delete`
+
+参数：
+
+`dirid`: 必填
 
 ### 歌曲信息
 

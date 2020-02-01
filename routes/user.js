@@ -87,6 +87,69 @@ router.get('/detail', async (req, res) => {
   res.send(result);
 });
 
+// 获取用户创建的歌单
+router.get('/songlist', async (req, res) => {
+  const { id, raw } = req.query;
+  if (!id) {
+    return res.send({
+      result: 500,
+      errMsg: 'id ?',
+    })
+  }
+  const result = await request({
+    url: 'https://c.y.qq.com/rsc/fcgi-bin/fcg_user_created_diss',
+    data: {
+      hostUin: 0,
+      hostuin: id,
+      sin: 0,
+      size: 200,
+      g_tk: 5381,
+      loginUin: 0,
+      format: 'json',
+      inCharset: 'utf8',
+      outCharset: 'utf-8',
+      notice: 0,
+      platform: 'yqq.json',
+      needNewCode: 0,
+    },
+    headers: {
+      Referer: 'https://y.qq.com/portal/profile.html',
+    },
+  });
+
+  if (Number(raw)) {
+   return res.send(result);
+  }
+
+  if (result.code === 4000) {
+    return res.send({
+      result: 100,
+      data: {
+        list: [],
+        message: '这个人不公开歌单',
+      },
+    })
+  }
+  if (!result.data) {
+    return res.send({
+      result: 200,
+      errMsg: '获取歌单出错',
+    })
+  }
+  result.data.disslist.find((v) => v.dirid === 201).diss_cover = 'http://y.gtimg.cn/mediastyle/global/img/cover_like.png';
+  return res.send({
+    result: 100,
+    data: {
+      list: result.data.disslist,
+      creator: {
+        hostuin: result.data.hostuin,
+        encrypt_uin: result.data.encrypt_uin,
+        hostname: result.data.hostname,
+      }
+    }
+  })
+})
+
 // 获取关注的歌手
 router.get('/follow/singers', async (req, res) => {
   const { id = req.cookies.uin, pageNo = 1, pageSize = 20, raw } = req.query;
