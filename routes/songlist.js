@@ -160,7 +160,23 @@ router.get('/add', async (req, res) => {
     raw: true,
   });
 
-  res.send(result);
+  switch (Number(result.code)) {
+    case 0:
+      return res.send({
+        message: '删除成功',
+        result: 100,
+      });
+    case 1000:
+      return res.send({
+        result: 301,
+        errMsg: '先登录！'
+      });
+    default:
+      return res.send({
+        result: 200,
+        errMsg: `删除出错: ${result.msg}`,
+      })
+  }
 });
 
 // 从歌单中删除歌曲，强制使用传过来的cookie
@@ -196,7 +212,23 @@ router.get('/remove', async (req, res) => {
     }
   });
 
-  return res.send(result);
+  switch (Number(result.code)) {
+    case 0:
+      return res.send({
+        message: '删除成功',
+        result: 100,
+      });
+    case 1000:
+      return res.send({
+        result: 301,
+        errMsg: '先登录！'
+      });
+    default:
+      return res.send({
+        result: 200,
+        errMsg: `删除出错: ${result.msg}`,
+      })
+  }
 });
 
 // 新建歌单 强制使用传过来的cookie
