@@ -42,6 +42,8 @@ $ npm start
 
 ## 更新记录
 
+20-02-15：👍 新增评论操作相关接口
+
 20-02-01：🥤 新增多个歌单操作相关接口
 
 20-01-31：🐑 配合 chrome 插件自动获取存储 cookie
@@ -693,7 +695,9 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 示例：[/album/songs?albummid=002MAeob3zLXwZ](http://api.qq.jsososo.com/album/songs?albummid=002MAeob3zLXwZ)
 
-### 获取评论
+### 评论
+
+#### 1、获取评论
 
 接口：`/comment`
 
@@ -711,7 +715,51 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 当 `pageNo` 为 1 且 `type` 为 0 时，会返回15条热评 `hot_comment`
 
+返回结果说明：`ispraise` 表示这条评论是否被赞过，1: 是，0: 否；`enable_delete` 表示这条评论是否能被删除，1: 是，0: 否
+
+上述的判断以 cookie 中的 `uin` 账号为准
+
 示例：[/comment?id=97773](http://api.qq.jsososo.com/comment?id=97773)
+
+#### 2、发送评论
+
+接口：`/comment/send`
+
+类型：仅支持 post
+
+该接口需要用户登陆 cookie
+
+参数：
+
+`id`: singid, albumid, tid, topid, vid  必填
+
+`biztype`: 发送评论类型 1: 歌曲 2: 专辑 3: 歌单 4: 排行榜 5: mv
+
+`content`: 评论内容，必填，不超过300字
+
+#### 3、删除评论
+
+接口：`/comment/del`
+
+该接口需要用户登陆 cookie
+
+参数：
+
+`id`: commentid  必填
+
+只要登陆情况下，一般这个接口返回的都是操作成功，不管 `id` 是否存真实在（是鹅厂这样返回的！）
+
+#### 4、点赞评论
+
+接口：`/comment/like`
+
+该接口需要用户登陆 cookie
+
+参数：
+
+`id`: commentid  必填
+
+`type`: 1：点赞，2：取消赞，默认 1
 
 ### 电台
 
