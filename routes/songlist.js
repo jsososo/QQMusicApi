@@ -65,7 +65,7 @@ router.get('/category', async (req, res) => {
 
 // 根据歌单分类筛选歌单
 router.get('/list', async (req, res) => {
-  const { raw, num = 20, sort = 5, category = 10000000 } = req.query;
+  const { raw, num = 20, pageSize = num, pageNo = 1, sort = 5, category = 10000000 } = req.query;
 
   const result = await request({
     url: 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg',
@@ -74,7 +74,8 @@ router.get('/list', async (req, res) => {
       outCharset: 'utf-8',
       sortId: sort,
       categoryId: category,
-      ein: num - 1,
+      sin: pageSize * (pageNo - 1),
+      ein: pageNo * pageSize - 1,
     },
     headers: {
       Referer: 'https://y.qq.com',
@@ -91,7 +92,8 @@ router.get('/list', async (req, res) => {
         list,
         sort: sortId,
         category: categoryId,
-        num: ein + 1,
+        pageNo,
+        pageSize,
         total: sum,
       }
     });
