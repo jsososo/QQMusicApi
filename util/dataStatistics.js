@@ -22,7 +22,7 @@ class DataStatistics {
         this.blackList = res;
       }, (err) => {
         this.blackList = {};
-        jsonFile.writeFile('data/whiteList.json', {});
+        jsonFile.writeFile('data/blackList.json', {});
       });
 
     jsonFile.readFile('data/tempList.json')
@@ -34,6 +34,8 @@ class DataStatistics {
       });
     this.updateTime = moment();
     this.lastSaveTime = moment();
+    // 针对 urlsMap 接口做一个特殊的计数
+    this.urlsMap = {};
     // 全部数据读取
     this.allData = {};
     fs.readdirSync(path.join(__dirname, '../data/record')).forEach((v) => {
@@ -64,8 +66,9 @@ class DataStatistics {
     const os = agent.os;
     const ip = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddres || req.socket.remoteAddress || '';
     const now = moment();
+    agent.browserVersion = `${agent.family} ${agent.major}.${agent.minor}.${agent.patch}`;
 
-    if (!this.ipCheck(ip)) {
+    if (!this.ipCheck(ip, req, agent)) {
       const t = this.getBlackTime(ip);
       return res.send({
         result: 400,
@@ -77,7 +80,6 @@ class DataStatistics {
     if (ip === '::ffff:127.0.0.1' || ip === '::1') {
       return next();
     }
-
     if ({ okhttp: true }[agent.family] || { Other: true }[os.family] ) {
       return res.send({
         result: 400,
@@ -86,7 +88,7 @@ class DataStatistics {
     }
     const data = {
       browser: agent.family,
-      browserVersion: `${agent.family} ${agent.major}.${agent.minor}.${agent.patch}`,
+      browserVersion: agent.browserVersion,
       os: os.family,
       osVersion: `${os.family} ${os.major}.${os.minor}.${os.patch}`,
       ip: ip,
@@ -94,6 +96,7 @@ class DataStatistics {
       url: req.url,
       host: req.headers.host,
       time: now.valueOf(),
+      D: now.format('DD'),
       H: now.format('HH'),
       m: now.format('mm'),
       Hm: now.format('HH:mm'),
@@ -109,12 +112,17 @@ class DataStatistics {
   }
 
   // 检查IP 是否可以继续调用
-  ipCheck(ip) {
+  ipCheck(ip, req, agent) {
     const now = this.updateTime.valueOf();
+    const ipArr = ip.split('.');
+    const preIp = `${ipArr[0]}.${ipArr[1]}`;
     if (this.whiteList[ip]) {
       return true;
     }
     if (this.blackList[ip] && (this.blackList[ip] > (now - 86400000))) {
+      return false;
+    }
+    if (agent.browserVersion === 'Firefox 49.0.0' && this.blackList[preIp] && (this.blackList[preIp] > (now - 86400000))) {
       return false;
     }
 
@@ -140,6 +148,26 @@ class DataStatistics {
       this.addList(ip, 'blackList');
       return false;
     }
+
+    // 如果一天内连续超过20次都是只请求 song/urls 接口
+    if (req.path === '/song/urls' && agent.browserVersion === 'Firefox 49.0.0') {
+      if (this.urlsMap[preIp] && this.urlsMap[preIp].time < (now - 86400000)) {
+        this.urlsMap[preIp] = undefined;
+      }
+      this.urlsMap[preIp] = this.urlsMap[preIp] || {
+        time: now,
+        count: 0,
+      };
+      this.urlsMap[preIp].count += 1;
+      if (this.urlsMap[preIp].count >= 10) {
+        this.addList(preIp, 'blackList', now + 86400000 * 2);
+        delete this.urlsMap[preIp];
+        return false;
+      }
+    } else {
+      delete this.urlsMap[preIp];
+    }
+    delete this.blackList[ip];
     return true;
   }
 
@@ -149,10 +177,11 @@ class DataStatistics {
   }
 
   // 加入 黑/白 名单
-  addList(ip, type) {
+  addList(ip, type, time) {
     const nType = type === 'whiteList' ? 'blackList' : 'whiteList';
-    this[type][ip] = this.updateTime.valueOf();
+    this[type][ip] = time || this.updateTime.valueOf();
     delete this[nType][ip];
+    delete this.tempList[ip];
     this.writeList();
   }
 

@@ -51,6 +51,7 @@ fs.readdirSync(path.join(__dirname, 'routes')).reverse().forEach(file => {
       ...req.query,
       ...req.body,
     };
+    req.cookies.uin = (req.cookies.uin || '').replace(/\D/g, '');
     const callback = require(`./routes/${filename}`);
     callback(req, res, next);
   });
