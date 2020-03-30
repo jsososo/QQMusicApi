@@ -7,6 +7,8 @@
 
 对于所有处理过的返回数据，都会包含 `result`，`100` 表示成功，`500` 表示穿参错误，`400` 为 node 捕获的未知异常，`301` 表示缺少用户登陆的 cookie
 
+关于如何在服务器上存储 cookie，可以查看接口 [设置用户Cookie](#设置用户Cookie)
+
 灵感来源：[Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
 ## Start
@@ -41,6 +43,10 @@ $ npm start
 
 
 ## 更新记录
+
+20-03-30：🌸 收藏歌单操作，获取用户收藏的歌单/专辑
+
+20-03-22：🍃 去除 cookie 中 uin 的其他字母
 
 20-02-15：👍 新增评论操作相关接口
 
@@ -306,6 +312,17 @@ anxios({
 
 ### 用户信息
 
+#### 设置用户Cookie
+
+接口：`/user/setCookie`
+
+参数：
+
+`data`: 字符串，cookie 信息，格式如下 `aaa=bbb; ccc=ddd; ....`
+
+该方法仅支持 post 请求，同时，在 `routes/user.js` 对应的方法里，设置了我个人的 QQ 号，当且仅当传入的 cookie 为写死的 QQ 号时才会
+被作为默认的公用 cookie 存储使用，各位在搭建自己的服务时记得修改这里的信息。
+
 #### 用户主页信息
 
 !> 这个接口是需要登陆 cookie 才能获取的，不然会返回 301，所以如果有误需要考虑一下可能是 cookie 过期
@@ -322,7 +339,7 @@ anxios({
 
 #### 用户创建的歌单
 
-接口：`/use/songlist`
+接口：`/user/songlist`
 
 参数：
 
@@ -331,6 +348,34 @@ anxios({
 这个接口比上一个接口更纯粹，只获取创建的歌单，且数据结构更简单，非必须登陆 Cookie，但如果用户未公开主页时，只有本人的 Cookie 才能获取数据
 
 示例：[/user/songlist?id=123456](http://api.qq.jsososo.com/user/songlist?id=123456)
+
+#### 用户收藏的歌单
+
+接口：`/user/collect/songlist`
+
+参数：
+
+`id`: qq号，必填，默认取 cookie 中 `uin`
+
+`pageNo`: 默认 1
+
+`pageSize`: 默认 20
+
+示例：[/user/collect/songlist?id=123456](http://api.qq.jsososo.com/user/collect/songlist?id=123456)
+
+#### 用户收藏的专辑
+
+接口：`/user/collect/album`
+
+参数：
+
+`id`: qq号，必填，默认取 cookie 中 `uin`
+
+`pageNo`: 默认 1
+
+`pageSize`: 默认 20
+
+示例：[/user/collect/album?id=123456](http://api.qq.jsososo.com/user/collect/album?id=123456)
 
 ### 歌单
 
@@ -438,6 +483,18 @@ anxios({
 参数：
 
 `dirid`: 必填
+
+#### 9、收藏/取消收藏 歌单
+
+!> 这个接口强制使用浏览器传来的用户 Cookie 信息
+
+接口：`/songlist/collect`
+
+参数：
+
+`id`: 歌单id 必填
+
+`op`: 必填 1 收藏；2 取消收藏
 
 ### 歌曲信息
 

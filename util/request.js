@@ -29,7 +29,7 @@ const request = async (obj, opts = {}) => {
     const res = await axios(obj);
 
     if (opts.dataType === 'xml') {
-      return handleXml(res.data);
+      return handleXml(res.data.replace(/(<!--)|(-->)/g, ''));
     }
 
     if (opts.dataType === 'raw') {

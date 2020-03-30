@@ -148,7 +148,77 @@ router.get('/songlist', async (req, res) => {
       }
     }
   })
-})
+});
+
+// 获取用户收藏的歌单
+router.get('/collect/songlist', async (req, res) => {
+  const { id = req.cookies.uin, pageNo = 1, pageSize = 20, raw } = req.query;
+  if (!id) {
+    return res.send({
+      result: 500,
+      errMsg: 'id ? '
+    })
+  }
+  const result = await request({
+    url: 'https://c.y.qq.com/fav/fcgi-bin/fcg_get_profile_order_asset.fcg',
+    data: {
+      ct: 20,
+      cid: 205360956,
+      userid: id,
+      reqtype: 3,
+      sin: (pageNo - 1) * pageSize,
+      ein: pageNo * pageSize,
+    }
+  });
+  if (Number(raw)) {
+    return res.send(result);
+  }
+  const { totaldiss, cdlist } = result.data;
+  return res.send({
+    result: 100,
+    data: {
+      list: cdlist,
+      total: totaldiss,
+      pageNo,
+      pageSize,
+    }
+  })
+});
+
+// 获取用户收藏的专辑
+router.get('/collect/album', async (req, res) => {
+  const { id = req.cookies.uin, pageNo = 1, pageSize = 20, raw } = req.query;
+  if (!id) {
+    return res.send({
+      result: 500,
+      errMsg: 'id ? '
+    })
+  }
+  const result = await request({
+    url: 'https://c.y.qq.com/fav/fcgi-bin/fcg_get_profile_order_asset.fcg',
+    data: {
+      ct: 20,
+      cid: 205360956,
+      userid: id,
+      reqtype: 2,
+      sin: (pageNo - 1) * pageSize,
+      ein: pageNo * pageSize - 1,
+    }
+  });
+  if (Number(raw)) {
+    return res.send(result);
+  }
+  const { totalalbum, albumlist } = result.data;
+  return res.send({
+    result: 100,
+    data: {
+      list: albumlist,
+      total: totalalbum,
+      pageNo,
+      pageSize,
+    }
+  })
+});
 
 // 获取关注的歌手
 router.get('/follow/singers', async (req, res) => {

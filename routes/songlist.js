@@ -351,6 +351,58 @@ router.get('/delete', async (req, res) => {
   }
 });
 
+// 收藏歌单 强制使用传过来的Cookie
+router.get('/collect', async (req, res) => {
+  req.query.ownCookie = 1;
+  // op: 1 收藏，2 取消收藏
+  const { id, op } = req.query;
+  if (!id || op === undefined) {
+    return res.send({
+      result: 500,
+      errMsg: 'id or op?',
+    })
+  }
+  const result = await request({
+    url: 'https://c.y.qq.com/folder/fcgi-bin/fcg_qm_order_diss.fcg',
+    data: {
+      loginUin: req.cookies.uin,
+      hostUin: 0,
+      inCharset: 'GB2312',
+      outCharset: 'utf8',
+      platform: 'yqq',
+      format: 'json',
+      g_tk: 799643780,
+      uin: req.cookies.uin,
+      dissid: id,
+      notice: 0,
+      needNewCode: 0,
+      from: 1,
+      optype: String(op),
+      utf8: 1,
+      qzreferrer: `https://y.qq.com/n/yqq/playlist/${id}.html`,
+    },
+    headers: {
+      Referer: `https://y.qq.com/n/yqq/playlist/${id}.html`,
+      origin: 'https://imgcache.qq.com',
+      'content-type': 'application/x-www-form-urlencoded',
+    }
+  }, {
+    dataType: 'raw'
+  });
+  if (result.code) {
+    return res.send({
+      result: 200,
+      errMsg: result.msg,
+    })
+  }
+  return res.send({
+    result: 100,
+    data: {
+      message: '操作成功',
+    }
+  });
+});
+
 // 这是一个把网易云歌单进行简单搬运到qq音乐的功能，运行的比较慢，看到的人感兴趣的就自己研究一下吧
 router.get('/move', async (req, res) => {
   const { id } = req.query;
