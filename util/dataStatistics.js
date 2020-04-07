@@ -60,12 +60,12 @@ class DataStatistics {
     if (lt !== nt) {
       jsonFile.writeFile(`data/record/${lt}.json`, this.allData[lt] || {});
       // 每天清一下 tempList
-      Object.keys(this.tempList.forEach(k => {
+      Object.keys(this.tempList).forEach(k => {
         this.tempList[k] = this.tempList[k].filter((v) => v > (now - 3600000 * 6));
         if (!this.tempList[k].length) {
           delete this.tempList[k];
         }
-      }));
+      });
 
       delete this.allData[this.earlyCountDate];
       this.earlyCountDate = moment(this.earlyCountDate, 'YYYYMMDD').add(1, 'days').format('YYYYMMDD');
