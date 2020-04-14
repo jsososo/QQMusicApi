@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const request  = require('../util/request');
+const cheerio = require('cheerio');
 
 router.get('/playlist', async (req, res, next) => {
   const {
@@ -89,5 +90,27 @@ router.get('/playlist/u', async (req, res, next) => {
     })
   }
 });
+
+// 日推
+router.get('/daily', async (req, res) => {
+  req.query.ownCookie = 1;
+  const page = await request('https://c.y.qq.com/node/musicmac/v6/index.html', {
+    dataType: 'raw',
+  })
+  const $ = cheerio.load(page);
+  const firstList = $('.mod_for_u .playlist__item').first();
+  let id = '';
+  if (firstList.find('.playlist__name').text() === '今日私享') {
+    id = firstList.find('.playlist__link').data('rid');
+  }
+  if (!id) {
+    return res.send({
+      result: 301,
+      errMsg: '未登录'
+    })
+  }
+  const listInfo = await request(`http://127.0.0.1:3300/songlist?id=${id}`);
+  return res.send(listInfo);
+})
 
 module.exports = router;

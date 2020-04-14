@@ -24,7 +24,6 @@ const request = async (obj, opts = {}) => {
     obj.xsrfCookieName = 'XSRF-TOKEN';
     obj.withCredentials = true;
     obj.headers.Cookie = Object.keys(cookieObj).map((k) => `${k}=${encodeURI(cookieObj[k])}`).join('; ');
-    console.log(obj.url);
 
     const res = await axios(obj);
 

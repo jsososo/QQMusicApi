@@ -43,6 +43,8 @@ $ npm start
 
 
 ## 更新记录
+20-04-14：🚎 日推
+
 20-04-07：🍰 接口记录问题
 
 20-03-30：🌸 收藏歌单操作，获取用户收藏的歌单/专辑
@@ -598,6 +600,12 @@ anxios({
 `pageSize`: 每页返回数量，默认为 20
 
 示例：[/recommend/playlist](http://api.qq.jsososo.com/recommend/playlist)
+
+#### 3、日推
+
+接口：`/recommend/daily`
+
+这个接口无需参数，强制使用传进来的 Cookie，返回日推歌单信息
 
 ### 最新推荐
 

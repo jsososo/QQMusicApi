@@ -16,7 +16,6 @@ class Feedback {
     const time = new Date().getTime();
     val.id = Number(time * 100 + Math.floor(Math.random() * 100)).toString(36);
     this.data.updateTime = time;
-    console.log(val, this.data);
     this.write();
   }
 

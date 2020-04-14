@@ -77,7 +77,6 @@ class DataStatistics {
 
   // ip 记录中间件
   record(req, res, next) {
-    console.log(Object.keys(this.allData));
     this.updateTime = moment();
     const agent = userAgent.parse(req.headers['user-agent']);
     const os = agent.os;
