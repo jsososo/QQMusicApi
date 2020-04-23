@@ -211,17 +211,46 @@ const getUrlNew = async (req, res) => {
   const file = `${typeObj.s}${mediaId}${typeObj.e}`;
   const guid = (Math.random() * 10000000).toFixed(0);
 
-  const url = `http://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg?g_tk=1722049047&loginUin=${uin}&needNewCode=0&cid=205361747&uin=323&songmid=${id}&filename=${file}&guid=${guid}`;
-  const result = await request(url);
-  let vkey = '';
-
-  if (result.data && result.data.items && result.data.items[0]) {
-    vkey = result.data.items[0].vkey;
-    if (vkey.indexOf(' ') > -1) {
-      vkey = '';
+  const result = await request({
+    url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
+    data: {
+      '-': 'getplaysongvkey',
+      'g_tk': 5381,
+      loginUin: uin,
+      hostUin: 0,
+      format: 'json',
+      inCharset: 'utf8',
+      outCharset: 'utf-8¬ice=0',
+      platform: 'yqq.json',
+      needNewCode: 0,
+      data: JSON.stringify({
+        "req_0": {
+          "module": "vkey.GetVkeyServer",
+          "method": "CgiGetVkey",
+          "param": {
+            "filename": [ file ],
+            "guid": guid,
+            "songmid": [ id ],
+            "songtype": [ 0 ],
+            "uin": uin,
+            "loginflag": 1,
+            "platform": "20",
+          }
+        },
+        "comm": {
+          "uin": uin,
+          "format": "json",
+          "ct": 19,
+          "cv": 0
+        }
+      })
     }
+  });
+  let purl = '';
+  if (result.req_0 && result.req_0.data && result.req_0.data.midurlinfo) {
+    purl = result.req_0.data.midurlinfo[0].purl;
   }
-  if (!vkey) {
+  if (!purl) {
     return res.send({
       result: 400,
       errMsg: '获取播放链接出错',
@@ -229,7 +258,7 @@ const getUrlNew = async (req, res) => {
   }
 
   res.send({
-    data: `http://122.226.161.16/amobile.music.tc.qq.com/${file}?guid=${guid}&vkey=${vkey}&uin=323&fromtag=66`,
+    data: `http://122.226.161.16/amobile.music.tc.qq.com/${purl}`,
     result: 100,
   });
 };
