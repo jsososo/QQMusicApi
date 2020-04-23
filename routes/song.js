@@ -211,44 +211,48 @@ const getUrlNew = async (req, res) => {
   const file = `${typeObj.s}${mediaId}${typeObj.e}`;
   const guid = (Math.random() * 10000000).toFixed(0);
 
-  const result = await request({
-    url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
-    data: {
-      '-': 'getplaysongvkey',
-      'g_tk': 5381,
-      loginUin: uin,
-      hostUin: 0,
-      format: 'json',
-      inCharset: 'utf8',
-      outCharset: 'utf-8¬ice=0',
-      platform: 'yqq.json',
-      needNewCode: 0,
-      data: JSON.stringify({
-        "req_0": {
-          "module": "vkey.GetVkeyServer",
-          "method": "CgiGetVkey",
-          "param": {
-            "filename": [ file ],
-            "guid": guid,
-            "songmid": [ id ],
-            "songtype": [ 0 ],
-            "uin": uin,
-            "loginflag": 1,
-            "platform": "20",
-          }
-        },
-        "comm": {
-          "uin": uin,
-          "format": "json",
-          "ct": 19,
-          "cv": 0
-        }
-      })
-    }
-  });
   let purl = '';
-  if (result.req_0 && result.req_0.data && result.req_0.data.midurlinfo) {
-    purl = result.req_0.data.midurlinfo[0].purl;
+  let count = 0;
+  while (!purl && count < 10) {
+    count += 1;
+    const result = await request({
+      url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
+      data: {
+        '-': 'getplaysongvkey',
+        'g_tk': 5381,
+        loginUin: uin,
+        hostUin: 0,
+        format: 'json',
+        inCharset: 'utf8',
+        outCharset: 'utf-8¬ice=0',
+        platform: 'yqq.json',
+        needNewCode: 0,
+        data: JSON.stringify({
+          "req_0": {
+            "module": "vkey.GetVkeyServer",
+            "method": "CgiGetVkey",
+            "param": {
+              "filename": [ file ],
+              "guid": guid,
+              "songmid": [ id ],
+              "songtype": [ 0 ],
+              "uin": uin,
+              "loginflag": 1,
+              "platform": "20",
+            }
+          },
+          "comm": {
+            "uin": uin,
+            "format": "json",
+            "ct": 19,
+            "cv": 0
+          }
+        })
+      }
+    });
+    if (result.req_0 && result.req_0.data && result.req_0.data.midurlinfo) {
+      purl = result.req_0.data.midurlinfo[0].purl;
+    }
   }
   if (!purl) {
     return res.send({
