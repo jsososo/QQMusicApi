@@ -21,7 +21,7 @@ $ npm install
 $ npm start
 ```
 
-项目默认端口为 3300
+项目默认端口为 3300，默认qq号 1234567 (设置Cookie)，可以通过修改 `bin/config.js` 或设置启动参数 `PORT=3400 QQ=7654321 npm start`
 
 **在线接口测试网址：[http://api.qq.jsososo.com](http://api.qq.jsososo.com)**
 
@@ -41,8 +41,21 @@ $ npm start
 !> 接口仅作为测试或者方便听歌使用，发现有人使用其他服务大量的调用接口导致服务经常性挂掉重启，所以加入了ip检测和黑白名单机制，
 想用的童鞋请自行clone走项目启动，我也没钱升级我的服务器了！！
 
+## 常见问题
+
+1、为什么无法获取音乐链接等？
+
+请确保已正确添加绿钻账号 Cookie 信息，具体操作可以查看 [设置用户cookie](#设置用户cookie)，检测是否设置成功可以查看 [查看当前cookie](#查看当前cookie)
+
+2、为什么返回了 `自己起一个 node 服务 这么难？？?` 或 被加入了黑名单 ?
+
+第一个，服务默认禁止了一些明显来源于爬虫的接口，可以将 `util/dataStatistics.js` 中相关代码注释重启，
+如果短时大量请求会被拉入黑名单，可以通过移除黑名单、加入白名单，或者干脆在 `app.js` 里注释 `dataHandle` 相关代码
+
 
 ## 更新记录
+20-05-21：🍇 新增推荐 banner、url 支持重定向、配置化启动
+
 20-04-23：🎢 修复高品音质获取失败问题
 
 20-04-18：📖 写死的参数替换
@@ -327,8 +340,14 @@ anxios({
 
 `data`: 字符串，cookie 信息，格式如下 `aaa=bbb; ccc=ddd; ....`
 
-该方法仅支持 post 请求，同时，在 `routes/user.js` 对应的方法里，设置了我个人的 QQ 号，当且仅当传入的 cookie 为写死的 QQ 号时才会
-被作为默认的公用 cookie 存储使用，各位在搭建自己的服务时记得修改这里的信息。
+该方法仅支持 post 请求，`content-type` 选择 `application/json`，同时，当且仅当传入的 cookie 为写配置的 QQ 号（启动参数 或 `bin/config.js`）时才会
+被作为默认的公用 cookie 存储使用，各位在搭建自己的服务时记得修改这里的信。参考如下 ![设置cookie](http://static.jsososo.com/200521/140442/bd3dd265f2da8be02429436592876b5b.png)
+
+#### 查看当前Cookie
+
+接口 `/user/cookie`
+
+无需参数，共返回两个字段 `cookie` 为当前网站下的 cookie，`userCookie` 为服务器公用账号 cookie。
 
 #### 用户主页信息
 
@@ -610,6 +629,14 @@ anxios({
 接口：`/recommend/daily`
 
 这个接口无需参数，强制使用传进来的 Cookie，返回日推歌单信息
+
+#### 4、轮播图Banner
+
+接口：`/recommend/banner`
+
+这个接口无需参数，目前仅已知会返回专辑推荐，但是只能获取 `albumid`，非 `albummid`
+
+示例：[/recommend/banner](http://api.qq.jsososo.com/recommend/banner)
 
 ### 最新推荐
 

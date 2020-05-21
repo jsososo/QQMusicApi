@@ -424,7 +424,7 @@ router.get('/move', async (req, res) => {
       if (obj.data && obj.data.songmid) {
         list.push(obj.data.songmid);
         await request({
-          url: 'http://127.0.0.1:3300/songlist/add',
+          url: `http://127.0.0.1:${global.PORT}/songlist/add`,
           data: {
             mid: obj.data.songmid,
             dirid: 201,

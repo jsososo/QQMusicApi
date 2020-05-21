@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
   }
 
   try {
-    const info = await request(`http://127.0.0.1:3300/album/songs?albummid=${albummid}`);
+    const info = await request(`http://127.0.0.1:${global.PORT}/album/songs?albummid=${albummid}`);
 
     const pageInfo = await request(`https://y.qq.com/n/yqq/album/${albummid}.html`, { dataType: 'raw' });
     const $ = cheerio.load(pageInfo);

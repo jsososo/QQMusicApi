@@ -57,7 +57,7 @@ router.get('/batch', async (req, res) => {
     });
   };
   midArr.forEach((mid) => {
-    request(`http://127.0.0.1:3300/song?songmid=${mid}`)
+    request(`http://127.0.0.1:${global.PORT}/song?songmid=${mid}`)
       .then((res) => {
         if (res.result === 100) {
           resultObj[mid] = res.data;
@@ -73,7 +73,7 @@ router.get('/batch', async (req, res) => {
 
 router.get('/find', async (req, res) => {
   const { key } = req.query;
-  const obj = await request(`http://127.0.0.1:3300/search?key=${key}&pageNo=1`);
+  const obj = await request(`http://127.0.0.1:${global.PORT}/search?key=${key}&pageNo=1`);
   const song = obj.data.list[0];
   if (!song) {
     res.send({
@@ -85,7 +85,7 @@ router.get('/find', async (req, res) => {
       result: 100,
       data: song,
     };
-    const urlResult = await request(`http://127.0.0.1:3300/song/urls?id=${song.songmid}`);
+    const urlResult = await request(`http://127.0.0.1:${global.PORT}/song/urls?id=${song.songmid}`);
     result.data.url = urlResult.data[song.songmid];
     res.send(result);
   }
@@ -98,7 +98,7 @@ router.post('/finds', async (req, res) => {
   let count = 0;
   for (let i = 0; i < keys.length; i++) {
     request({
-      url: `http://127.0.0.1:3300/song/find?key=${encodeURIComponent(data[keys[i]])}`,
+      url: `http://127.0.0.1:${global.PORT}/song/find?key=${encodeURIComponent(data[keys[i]])}`,
     }).then((result) => {
       data[keys[i]] = result.data || {};
       count += 1;
@@ -176,7 +176,7 @@ const getUrlNew = async (req, res) => {
     uin = req.cookies.uin || uin;
   }
 
-  const { id, type = '128', mediaId = id } = obj;
+  const { id, type = '128', mediaId = id, isRedirect = '0' } = obj;
   const typeMap = {
     m4a: {
       s: 'C400',
@@ -259,6 +259,10 @@ const getUrlNew = async (req, res) => {
       result: 400,
       errMsg: '获取播放链接出错',
     })
+  }
+
+  if (Number(isRedirect)) {
+    return res.redirect(`http://122.226.161.16/amobile.music.tc.qq.com/${purl}`);
   }
 
   res.send({

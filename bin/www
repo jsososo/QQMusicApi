@@ -7,12 +7,15 @@
 var app = require('../app');
 var debug = require('debug')('qqmusicapi:server');
 var http = require('http');
+var config = require('./config');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3300');
+var port = normalizePort(process.env.PORT || config.port);
+global.QQ = process.env.QQ || config.qq;
+global.PORT = port;
 app.set('port', port);
 
 /**
@@ -88,4 +91,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
   console.log(`Listening on \n http://localhost:${addr.port} \n http://127.0.0.1:${addr.port}`);
+  console.log(`配置QQ号为：${global.QQ}`);
 }

@@ -109,8 +109,40 @@ router.get('/daily', async (req, res) => {
       errMsg: '未登录'
     })
   }
-  const listInfo = await request(`http://127.0.0.1:3300/songlist?id=${id}`);
+  const listInfo = await request(`http://127.0.0.1:${global.PORT}/songlist?id=${id}`);
   return res.send(listInfo);
+});
+
+// banner 日推
+router.get('/banner', async (req, res) => {
+  req.query.ownCookie = 1;
+  const page = await request('https://c.y.qq.com/node/musicmac/v6/index.html', {
+    dataType: 'raw',
+  })
+  const $ = cheerio.load(page);
+  const result = [];
+  $('.focus__box .focus__pic').each((a, b) => {
+    const domA = cheerio(b).find('a');
+    const domImg = cheerio(b).find('img');
+    const [type, id] = [domA.attr('data-type'), domA.attr('data-rid')];
+    const obj = {
+      type,
+      id,
+      picUrl: domImg.attr('src'),
+      h5Url: {
+        10002: `https://y.qq.com/musicmac/v6/album/detail.html?albumid=${id}`
+      }[type] || undefined,
+      typeStr: {
+        10002: 'album'
+      }[type] || undefined
+    }
+    result.push(obj);
+  })
+
+  res.send({
+    result: 100,
+    data: result,
+  })
 })
 
 module.exports = router;

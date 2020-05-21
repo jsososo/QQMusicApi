@@ -44,7 +44,7 @@ router.post('/setCookie', (req, res) => {
   jsonFile.writeFile('data/allCookies.json', global.allCookies);
 
   // 这里写死我的企鹅号，作为存在服务器上的cookie
-  if (String(userCookie.uin) === '956581739') {
+  if (String(userCookie.uin) === String(global.QQ)) {
     global.userCookie = userCookie;
     jsonFile.writeFile('data/cookie.json', global.userCookie);
   }
