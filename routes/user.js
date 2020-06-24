@@ -89,7 +89,7 @@ router.get('/detail', async (req, res) => {
 
 // 获取用户创建的歌单
 router.get('/songlist', async (req, res) => {
-  const { id, raw } = req.query;
+  const { id, raw, ownCookie = 0 } = req.query;
   if (!id) {
     return res.send({
       result: 500,
@@ -136,7 +136,28 @@ router.get('/songlist', async (req, res) => {
       errMsg: '获取歌单出错',
     })
   }
-  result.data.disslist.find((v) => v.dirid === 201).diss_cover = 'http://y.gtimg.cn/mediastyle/global/img/cover_like.png';
+  let favDiss = result.data.disslist.find((v) => v.dirid === 201);
+
+  if (favDiss) {
+    favDiss.diss_cover = 'http://y.gtimg.cn/mediastyle/global/img/cover_like.png';
+  } else {
+    try {
+      const detail = await request(`http://127.0.0.1:${global.PORT}/user/detail?id=${id}&ownCookie=${ownCookie}`);
+      const fav = detail.data.mymusic[0];
+      favDiss = {
+        "diss_name": "我喜欢",
+        "diss_cover": "http://y.gtimg.cn/mediastyle/y/img/cover_qzone_130.jpg",
+        "song_cnt": fav.num0,
+        "listen_num": 0,
+        "dirid": 201,
+        "tid": fav.id,
+        "dir_show": 1
+      }
+      result.data.disslist.unshift(favDiss);
+    } catch (err) {
+      console.log('获取主页信息，我喜欢的音乐失败：', err);
+    }
+  }
   return res.send({
     result: 100,
     data: {
