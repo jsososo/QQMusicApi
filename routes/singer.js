@@ -5,14 +5,20 @@ const request  = require('../util/request');
 // 获取歌手介绍
 router.get('/desc', async (req, res, next) => {
   const { singermid, raw } = req.query;
+  const { cache } = global;
 
+  let cacheKey = `singer_desc_${singermid}_${raw}`;
+  let cacheData = cache.get(cacheKey)
+  if (cacheData) {
+    return res.send(cacheData);
+  }
   if (!singermid) {
     return res.send({
       result: 500,
       errMsg: 'singermid 不能为空',
     })
   }
-  const result = await request({
+  let result = await request({
     url: 'http://c.y.qq.com/splcloud/fcgi-bin/fcg_get_singer_desc.fcg',
     data: {
       singermid,
@@ -27,20 +33,27 @@ router.get('/desc', async (req, res, next) => {
     dataType: 'xml',
   });
 
-  if (Number(raw)) {
-    res.send(result);
-  } else {
-    res.send({
+  if (!Number(raw)) {
+    result = {
       result: 100,
       data: result.result.data.info,
-    })
+    };
   }
+  res.send(result);
+  cache.set(cacheKey, result, 24 * 60);
 });
 
 // 获取歌手专辑
 router.get('/album', async (req, res, next) => {
   const { singermid, pageNo = 1, pageSize = 20, raw } = req.query;
 
+  const { cache } = global;
+
+  let cacheKey = `singer_album_${singermid}_${pageNo}_${pageSize}_${raw}`;
+  let cacheData = cache.get(cacheKey)
+  if (cacheData) {
+    return res.send(cacheData);
+  }
   if (!singermid) {
     return res.send({
       result: 500,
@@ -75,7 +88,7 @@ router.get('/album', async (req, res, next) => {
     res.send(result);
   } else {
     const { list, singer_id: id, singer_mid: singermid, singer_name: name, total } = result.singerAlbum.data;
-    res.send({
+    cacheData = {
       result: 100,
       data: {
         list,
@@ -86,7 +99,9 @@ router.get('/album', async (req, res, next) => {
         pageNo,
         pageSize,
       }
-    })
+    };
+    res.send(cacheData);
+    cache.set(cacheKey, result, 2 * 60);
   }
 });
 
@@ -94,6 +109,13 @@ router.get('/album', async (req, res, next) => {
 router.get('/songs', async (req, res) => {
   const { singermid, num = 20, raw } = req.query;
 
+  const { cache } = global;
+
+  let cacheKey = `singer_album_${singermid}_${num}}_${raw}`;
+  let cacheData = cache.get(cacheKey)
+  if (cacheData) {
+    return res.send(cacheData);
+  }
   if (!singermid) {
     return res.send({
       result: 500,
@@ -131,7 +153,7 @@ router.get('/songs', async (req, res) => {
       Object.assign(o, extras[i] || {});
     });
 
-    res.send({
+    cacheData = {
       result: 100,
       data: {
         list,
@@ -141,7 +163,9 @@ router.get('/songs', async (req, res) => {
         num,
         singermid,
       }
-    })
+    };
+    res.send(cacheData);
+    cache.set(cacheKey, cacheData);
   }
 });
 

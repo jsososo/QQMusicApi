@@ -4,6 +4,7 @@ const router = express.Router();
 
 // 搜索
 router.get('/', async (req, res) => {
+  const { cache } = global;
   let {
     pageNo = 1,
     pageSize = 20,
@@ -20,7 +21,13 @@ router.get('/', async (req, res) => {
     });
   }
 
+  const cacheKey = `search_${key}_${pageNo}_${pageSize}_${t}`
+  const cacheData = cache.get(cacheKey);
+  if (cacheData) {
+    return res.send(cacheData);
+  }
   const url = {
+    0: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
     2: `https://c.y.qq.com/soso/fcgi-bin/client_music_search_songlist?remoteplace=txt.yqq.playlist&page_no=${pageNo - 1}&num_per_page=${pageSize}&query=${key}`,
     // 3: 'http://c.y.qq.com/soso/fcgi-bin/client_search_user',
   }[t] || 'http://c.y.qq.com/soso/fcgi-bin/client_search_cp';
@@ -97,7 +104,8 @@ router.get('/', async (req, res) => {
       total = totalnum;
       break;
   }
-  res.send({
+
+  const resData = {
     result: 100,
     data: {
       list,
@@ -110,7 +118,9 @@ router.get('/', async (req, res) => {
     },
     // header: req.header(),
     // req: JSON.parse(JSON.stringify(req)),
-  });
+  }
+  cache.set(cacheKey, resData, 120);
+  res.send(resData);
 });
 
 // 热搜词

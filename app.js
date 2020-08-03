@@ -7,11 +7,13 @@ const fs = require('fs');
 const DataStatistics = require('./util/dataStatistics');
 const jsonFile = require('jsonfile');
 const Feedback = require('./util/feedback');
+const Cache = require('./util/cache');
 
 const app = express();
 const dataHandle = new DataStatistics();
 global.dataStatistics = dataHandle;
 global.feedback = new Feedback();
+global.cache = new Cache();
 
 jsonFile.readFile('data/allCookies.json')
   .then((res) => {
