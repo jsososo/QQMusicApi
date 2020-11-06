@@ -23,6 +23,10 @@ $ npm start
 
 项目默认端口为 3300，默认qq号 1234567 (设置Cookie)，可以通过修改 `bin/config.js` 或设置启动参数 `PORT=3400 QQ=7654321 npm start`
 
+如果使用的是微信号，则将 `bin/config.js` 中的 qq好改为 `wxuin`，具体数值可以在网页版qq音乐的 cookie 中获取
+
+如果需要启用数据统计、ip拦截等，可以将 `bin/config.js` 中的 `useDataStatistics` 设为 `true` （会存在直接拦截部分来自其他后台的请求）
+
 **在线接口测试网址：[http://api.qq.jsososo.com](http://api.qq.jsososo.com)**
 
 ## 用前须知
@@ -54,6 +58,8 @@ $ npm start
 
 
 ## 更新记录
+20-08-03：😲 支持微信登录
+
 20-08-03：🕶️ 部分接口增加缓存策略
 
 20-07-14 修改了因图标导致的无法部署

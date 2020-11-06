@@ -8,6 +8,7 @@ const DataStatistics = require('./util/dataStatistics');
 const jsonFile = require('jsonfile');
 const Feedback = require('./util/feedback');
 const Cache = require('./util/cache');
+const config = require('./bin/config');
 
 const app = express();
 const dataHandle = new DataStatistics();
@@ -29,8 +30,8 @@ jsonFile.readFile('data/cookie.json')
     global.userCookie = {}
   });
 
-// 每5分钟存一下数据
-setInterval(() => dataHandle.saveInfo(), 60000 * 5);
+// 每10分钟存一下数据
+config.useDataStatistics && setInterval(() => dataHandle.saveInfo(), 60000 * 10);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -42,7 +43,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req, res, next) => dataHandle.record(req, res, next));
+config.useDataStatistics && app.use((req, res, next) => dataHandle.record(req, res, next));
 
 fs.readdirSync(path.join(__dirname, 'routes')).reverse().forEach(file => {
   const filename = file.replace(/\.js$/, '');
@@ -53,7 +54,13 @@ fs.readdirSync(path.join(__dirname, 'routes')).reverse().forEach(file => {
       ...req.query,
       ...req.body,
     };
-    req.cookies.uin = (req.cookies.uin || '').replace(/\D/g, '');
+    // qq 登录
+    let uin = (req.cookies.uin || '');
+    // login_type 2 微信登录
+    if (Number(req.cookies.login_type) === 2) {
+      uin = req.cookies.wxuin;
+    }
+    req.cookies.uin = uin.replace(/\D/g, '');
     const callback = require(`./routes/${filename}`);
     callback(req, res, next);
   });
