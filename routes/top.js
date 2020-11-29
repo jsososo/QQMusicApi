@@ -59,6 +59,7 @@ router.get('/', async (req, res, next) => {
           subTitle: resData.data.titleSub,
           titleDetail: resData.data.titleDetail,
           desc: resData.data.intro,
+          picUrl: resData.data.headPicUrl || resData.data.frontPicUrl
         },
         list: resData.data.song.map((o, i) => (
           {

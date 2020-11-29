@@ -32,6 +32,14 @@ router.get('/getCookie', (req, res) => {
   })
 });
 
+router.options('/setCookie', (req, res) => {
+  res.set('Access-Control-Allow-Origin', 'https://y.qq.com');
+  res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set('Access-Control-Allow-Credentials','true');
+  res.sendStatus(200);
+})
+
 router.post('/setCookie', (req, res) => {
   const { data } = req.body;
   const userCookie = {};
@@ -40,6 +48,10 @@ router.post('/setCookie', (req, res) => {
     userCookie[arr[0]] = arr[1];
   });
 
+  if (Number(userCookie.login_type) === 2) {
+    userCookie.uin = userCookie.wxuin;
+  }
+  userCookie.uin = (userCookie.uin || '').replace(/\D/g, '');
   global.allCookies[userCookie.uin] = userCookie;
   jsonFile.writeFile('data/allCookies.json', global.allCookies);
 
@@ -48,8 +60,10 @@ router.post('/setCookie', (req, res) => {
     global.userCookie = userCookie;
     jsonFile.writeFile('data/cookie.json', global.userCookie);
   }
-
-
+  res.set('Access-Control-Allow-Origin', 'https://y.qq.com');
+  res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set('Access-Control-Allow-Credentials','true');
   res.send({
     result: 100,
     data: '操作成功',
