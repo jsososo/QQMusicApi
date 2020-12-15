@@ -160,8 +160,8 @@ const getUrls = async (req, res) => {
     await reqFun();
   }
 
-  // const domain = result.req_0.data.sip[0];
-  const domain = 'http://122.226.161.16/amobile.music.tc.qq.com/';
+  const domain = result.req_0.data.sip[0];
+  // const domain = 'http://122.226.161.16/amobile.music.tc.qq.com/';
 
   const data = {};
   result.req_0.data.midurlinfo.forEach((item) => {
@@ -267,7 +267,7 @@ const getUrlNew = async (req, res) => {
       }
     });
     if (result.req_0 && result.req_0.data && result.req_0.data.midurlinfo) {
-      purl = result.req_0.data.midurlinfo[0].purl;
+      purl = `${result.req_0.data.sip[0]}${result.req_0.data.midurlinfo[0].purl}`;
     }
   }
   if (!purl) {
@@ -278,11 +278,11 @@ const getUrlNew = async (req, res) => {
   }
 
   if (Number(isRedirect)) {
-    return res.redirect(`http://122.226.161.16/amobile.music.tc.qq.com/${purl}`);
+    return res.redirect(purl);
   }
 
   cacheData = {
-    data: `http://122.226.161.16/amobile.music.tc.qq.com/${purl}`,
+    data: purl,
     result: 100,
   }
   res.send(cacheData);
