@@ -269,7 +269,7 @@ const getUrlNew = async (req, res) => {
       }
     });
     if (result.req_0 && result.req_0.data && result.req_0.data.midurlinfo) {
-      purl = `${result.req_0.data.sip[0]}${result.req_0.data.midurlinfo[0].purl}`;
+      purl = result.req_0.data.midurlinfo[0].purl;
     }
     if (domain === '') {
       domain = result.req_0.data.sip.find(i => !i.startsWith('http://ws')) || result.req_0.data.sip[0];
