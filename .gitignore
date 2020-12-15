@@ -1,3 +1,4 @@
-yarn-error.log
-data/allData.json
+.idea
+*.log
+data/*
 **/node_modules
