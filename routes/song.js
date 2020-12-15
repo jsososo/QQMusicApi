@@ -160,7 +160,7 @@ const getUrls = async (req, res) => {
     await reqFun();
   }
 
-  const domain = result.req_0.data.sip.find(i => !i.startsWith('http://ws'))
+  const domain = result.req_0.data.sip.find(i => !i.startsWith('http://ws')) || result.req_0.data.sip[0];
 
   // domain = 'http://122.226.161.16/amobile.music.tc.qq.com/';
 
@@ -269,10 +269,10 @@ const getUrlNew = async (req, res) => {
       }
     });
     if (result.req_0 && result.req_0.data && result.req_0.data.midurlinfo) {
-      purl = result.req_0.data.midurlinfo[0].purl;
+      purl = `${result.req_0.data.sip[0]}${result.req_0.data.midurlinfo[0].purl}`;
     }
     if (domain === '') {
-      domain = result.req_0.data.sip.find(i => !i.startsWith('http://ws'))
+      domain = result.req_0.data.sip.find(i => !i.startsWith('http://ws')) || result.req_0.data.sip[0];
     }
   }
   if (!purl) {
