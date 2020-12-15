@@ -718,7 +718,9 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 `num`: 返回歌曲数量
 
-示例：[/singer/songs?singermid=0025NhlN2yWrP4](http://api.qq.jsososo.com/singer/songs?singermid=0025NhlN2yWrP4)
+`page`: 页数 默认为第一页
+
+示例：[/singer/songs?singermid=0025NhlN2yWrP4&page=1&num=20](http://api.qq.jsososo.com/singer/songs?singermid=0025NhlN2yWrP4&page=1&num=20)
 
 #### 3、获取歌手专辑
 
