@@ -107,11 +107,12 @@ router.get('/album', async (req, res, next) => {
 
 // 获取热门歌曲
 router.get('/songs', async (req, res) => {
-  const { singermid, num = 20, raw, page = 1 } = req.query;
+  const { singermid, num, raw, page = 1 } = req.query;
+  const pageSize = num ? parseInt(num) : 20;
 
   const { cache } = global;
 
-  let cacheKey = `singer_album_${singermid}_${num}_${raw}_${page}`;
+  let cacheKey = `singer_album_${singermid}_${pageSize}_${raw}_${page}`;
   let cacheData = cache.get(cacheKey)
   if (cacheData) {
     return res.send(cacheData);
@@ -137,7 +138,7 @@ router.get('/songs', async (req, res) => {
             sort: 5,
             singermid,
             sin:  (page - 1) * num,
-            num,
+            num: pageSize,
           },
           module: "music.web_singer_info_svr"
         }
@@ -160,7 +161,7 @@ router.get('/songs', async (req, res) => {
         singer,
         desc,
         total,
-        num,
+        num: pageSize,
         singermid,
       }
     };
