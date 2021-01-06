@@ -45,28 +45,52 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 config.useDataStatistics && app.use((req, res, next) => dataHandle.record(req, res, next));
 
-fs.readdirSync(path.join(__dirname, 'routes')).reverse().forEach(file => {
+const corsMap = {
+  '/user/setCookie': true,
+}
+fs.readdirSync(path.join(__dirname, 'routes')).forEach(file => {
   const filename = file.replace(/\.js$/, '');
-  app.use(`/${filename}`, (req, res, next) => {
-    global.response = res;
-    global.req = req;
-    req.query = {
-      ...req.query,
-      ...req.body,
-    };
-    // qq 登录
-    let uin = (req.cookies.uin || '');
-    // login_type 2 微信登录
-    if (Number(req.cookies.login_type) === 2) {
-      uin = req.cookies.wxuin;
-    }
-    req.cookies.uin = uin.replace(/\D/g, '');
-    const callback = require(`./routes/${filename}`);
-    callback(req, res, next);
+  const RouterMap = require(`./routes/${filename}`);
+  Object.keys(RouterMap).forEach((path) => {
+    app.use(`/${filename}${path}`, (req, res, next) => {
+      const router = express.Router();
+      global.response = res;
+      global.req = req;
+      req.query = {
+        ...req.query,
+        ...req.body,
+      };
+      // qq 登录
+      let uin = (req.cookies.uin || '');
+      // login_type 2 微信登录
+      if (Number(req.cookies.login_type) === 2) {
+        uin = req.cookies.wxuin;
+      }
+      req.cookies.uin = uin.replace(/\D/g, '');
+      const func = RouterMap[path];
+
+      console.log(`/${filename}${path}`, path, func);
+      router.post('/', (req, res, next) => func(req, res, next));
+      router.get('/', (req, res, next) => func(req, res, next));
+      if (corsMap[`/${filename}${path}`]) {
+        router.options('/', (req, res) => {
+          res.set('Access-Control-Allow-Origin', 'https://y.qq.com');
+          res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+          res.set('Access-Control-Allow-Headers', 'Content-Type');
+          res.set('Access-Control-Allow-Credentials','true');
+          res.sendStatus(200);
+        })
+      }
+      router(req, res, next);
+    })
   });
 });
 
-app.use('/', require('./routes/index'));
+app.use('/', (req, res) => {
+  const router = express.Router()
+  router.get('/', (req, res) => require('./routes/index')['/'](req, res))
+  router(req, res);
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
