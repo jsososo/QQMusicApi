@@ -288,7 +288,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 #### 快速搜索
 
-接口: `/quick`
+接口: `/search/quick`
 
 `key`: 关键词 必填
 
