@@ -142,6 +142,12 @@ const song = {
         errMsg: 'type 传错了，看看文档去',
       })
     }
+    if (!id) {
+      return res.send({
+        result: 500,
+        errMsg: 'id ?',
+      })
+    }
     const file = `${typeObj.s}${id}${mediaId}${typeObj.e}`;
     const guid = (Math.random() * 10000000).toFixed(0);
 
@@ -190,6 +196,12 @@ const song = {
           })
         }
       });
+      if (!result.req_0.data) {
+        return res.send({
+          result: 400,
+          errMsg: '获取链接出错，建议检查是否携带 cookie ',
+        })
+      }
       if (result.req_0 && result.req_0.data && result.req_0.data.midurlinfo) {
         purl = result.req_0.data.midurlinfo[0].purl;
       }
