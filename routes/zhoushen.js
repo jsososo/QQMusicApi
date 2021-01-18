@@ -38,6 +38,7 @@ function writeHtmlFromJson(data) {
                                     }
                                     
                                     body {
+                                        background-image: url('/img/hotpot.png');
                                         margin: 0;
                                         padding: 0;
                                     }
