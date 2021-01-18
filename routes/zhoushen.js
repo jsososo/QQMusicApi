@@ -43,36 +43,37 @@ async function writeHtmlFromJson(data) {
                                         box-sizing: border-box;
                                         font-family: "microsoft yahei", arial, sans-serif;
                                     }
-                                    
+
                                     body {
-                                        background-image: url('/img/hotpot.png');
                                         margin: 0;
                                         padding: 0;
+                                        background: url(../img/11.png);
+                                        background-size: cover;
                                     }
-                                    
+
                                     /*light skin*/
-                                    
+
                                     .scroll-skin-light::-webkit-scrollbar {
                                         width: 4px;
                                         height: 4px;
                                         background-color: #f5f5f5;
                                     }
-                                    
+
                                     .scroll-skin-light::-webkit-scrollbar-track {
                                         border-radius: 2px;
                                         background-color: #f5f5f5;
                                     }
-                                    
+
                                     .scroll-skin-light::-webkit-scrollbar-thumb {
                                         border-radius: 2px;
                                         background-color: #d5e3ff;
                                     }
-                                    
-                                    
+
+
                                     .content {
                                         /*padding: 20px;*/
                                     }
-                                    
+
                                     .title {
                                         font-size: 16px;
                                         background: rgb(102, 146, 228);
@@ -82,12 +83,13 @@ async function writeHtmlFromJson(data) {
                                         color: #fff;
                                         /*font-family: "microsoft yahei";*/
                                     }
+
                                     .ad {
                                         font-size: 16px;
                                         padding: 0 20px;
                                         color: rgb(102, 146, 228);
                                     }
-                                    
+
                                     .time,
                                     .fans,
                                     .num {
@@ -96,19 +98,19 @@ async function writeHtmlFromJson(data) {
                                         font-size: 14px;
                                         color: rgb(102, 146, 228);
                                     }
-                                    
+
                                     .table-title {
                                         font-size: 16px;
                                         margin: 0 0 0 20px;
                                         color: rgb(102, 146, 228);
                                     }
-                                    
+
                                     .title-tip {
                                         font-size: 12px;
-                                        color: #B2D4FF;
+                                        color: #a9b3c0;
                                         padding: 0 20px;
                                     }
-                                    
+
                                     .list-ul {
                                         padding: 0;
                                         margin: 0;
@@ -125,19 +127,19 @@ async function writeHtmlFromJson(data) {
                                         list-style: none;
                                         border-bottom: 1px solid #B2D4FF;
                                         line-height: 40px;
-                                        font-size: 16px;
-                                        color: #565656;
+                                        font-size: 14px;
+                                        color: #5a6a7c;
                                     }
                                     .list-li:nth-child(even){
                                         color: #fff;
-                                        background:rgb(102, 146, 228) ;
+                                        background:rgb(168 178 198) ;
                                     }
                                     .list-li::after {
                                         content: '';
                                         display: table;
                                         clear: both;
                                     }
-                                    
+
                                     .list-span{
                                         float: left;
                                         display: block;
