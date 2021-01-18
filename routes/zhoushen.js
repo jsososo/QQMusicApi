@@ -1,15 +1,75 @@
 const request  = require('../util/request');
+const json2html = require('node-json2html');
+
+let template_table_header = {
+    "<>": "tr", "html": [
+        {"<>": "th", "html": "序号"},
+        {"<>": "th", "html": "歌名"},
+        {"<>": "th", "html": "巅峰指数"},
+        {"<>": "th", "html": "收听人数"},
+        {"<>": "th", "html": "总收听量"}
+    ]
+}
+
+let template_table_body = {
+    "<>": "tr", "html": [
+        {"<>": "td", "html": "${index}"},
+        {"<>": "td", "html": "${name}"},
+        {"<>": "td", "html": "${score}"},
+        {"<>": "td", "html": "${listenCnt}"},
+        {"<>": "td", "html": "${listen_count}"}
+    ]
+}
+
+function writeHtmlFromScoresJson(data) {
+
+    const date = new Date();
+    let table_header = json2html.transform(data.details[0], template_table_header);
+    let table_body = json2html.transform(data.details, template_table_body);
+
+    let header = `<!DOCTYPE html>
+                        <html>
+                            <head>
+                                <title>Report</title>
+                                <meta charset="utf-8">
+                                <style>
+                                    table {
+                                    font-family: arial, sans-serif;
+                                    border-collapse: collapse;
+                                    width: 100%;
+                                    }
+
+                                    td, th {
+                                    border: 1px solid #dddddd;
+                                    text-align: left;
+                                    padding: 8px;
+                                    }
+
+                                    tr:nth-child(even) {
+                                    background-color: #dddddd;
+                                    }
+                                </style>
+                            </head>`;
+    let body = `<h1>周深QQ音乐收听量Top20</h1><br>
+                <p>日期：${date.toLocaleString()}</p>
+                <p>粉丝总数：${data.fans}</p>
+                <p>过去24小时总收听人数：${data.totalListenCount}</p>
+                <table id="my_table"><thead>${table_header}</thead><tbody>${table_body}</tbody></table>`;
+    body = `<body>${body}</body>`
+
+    let html = header + body + '</html>';
+
+    return html;
+}
 
 module.exports = {
+
     '/hotsongs': async (req, res) => {
         const singermid = '003fA5G40k6hKc';
-        const { num, page = 1 } = req.query;
+        const { num = 20, page = 1 } = req.query;
         const { cache } = global;
         let cacheKey = `zs_${num}_${page}`;
         let cacheData = cache.get(cacheKey)
-        if (cacheData) {
-            return res.send(cacheData);
-        }
 
         // get top 20 hot songs
         const result = await request({
@@ -70,7 +130,7 @@ module.exports = {
             picked.record = record ? record.data : undefined;
             picked.score = score;
             picked.listenCnt = listenCnt;
-            picked.index = index;
+            picked.index = index+1;
             if( listenCnt ) {
                 let [ count ] = listenCnt.match(/\d+/g);
                 totalListenCount += parseInt( count );
@@ -85,7 +145,13 @@ module.exports = {
                 details,
             }
         };
-        res.send(cacheData);
-        cache.set(cacheKey, cacheData);
+        //res.send(cacheData);
+        res.writeHead(200, {
+            'Content-Type': 'text/html'
+        });
+
+        let html = writeHtmlFromScoresJson( cacheData.data );
+        res.end(html);
+        cache.set(cacheKey, html);
   }
 }
