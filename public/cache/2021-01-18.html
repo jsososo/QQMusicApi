@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+                        <html>
+                            <head>
+                                <title>周深QQ音乐数据</title>
+                                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                                <style>
+                                    * {
+                                        box-sizing: border-box;
+                                        font-family: "microsoft yahei", arial, sans-serif;
+                                    }
+                                    
+                                    body {
+                                        background-image: url('/img/hotpot.png');
+                                        margin: 0;
+                                        padding: 0;
+                                    }
+                                    
+                                    /*light skin*/
+                                    
+                                    .scroll-skin-light::-webkit-scrollbar {
+                                        width: 4px;
+                                        height: 4px;
+                                        background-color: #f5f5f5;
+                                    }
+                                    
+                                    .scroll-skin-light::-webkit-scrollbar-track {
+                                        border-radius: 2px;
+                                        background-color: #f5f5f5;
+                                    }
+                                    
+                                    .scroll-skin-light::-webkit-scrollbar-thumb {
+                                        border-radius: 2px;
+                                        background-color: #d5e3ff;
+                                    }
+                                    
+                                    
+                                    .content {
+                                        /*padding: 20px;*/
+                                    }
+                                    
+                                    .title {
+                                        font-size: 16px;
+                                        background: rgb(102, 146, 228);
+                                        border-radius: 0 0 15px 15px;
+                                        line-height: 50px;
+                                        padding: 0 20px;
+                                        color: #fff;
+                                        /*font-family: "microsoft yahei";*/
+                                    }
+                                    .ad {
+                                        font-size: 16px;
+                                        padding: 0 20px;
+                                        color: rgb(102, 146, 228);
+                                    }
+                                    
+                                    .time,
+                                    .fans,
+                                    .num {
+                                        text-align: right;
+                                        margin: 10px 20px;
+                                        font-size: 14px;
+                                        color: rgb(102, 146, 228);
+                                    }
+                                    
+                                    .table-title {
+                                        font-size: 16px;
+                                        margin: 0 0 0 20px;
+                                        color: rgb(102, 146, 228);
+                                    }
+                                    
+                                    .title-tip {
+                                        font-size: 12px;
+                                        color: #B2D4FF;
+                                        padding: 0 20px;
+                                    }
+                                    
+                                    .list-ul {
+                                        padding: 0;
+                                        margin: 0;
+                                        height: auto;
+                                        /**/
+                                    }
+                                    .list-title{
+                                        border-top:1px solid #B2D4FF;
+                                    }
+                                    .list-title .list-span{
+                                        color: rgb(102, 146, 228);
+                                    }
+                                    .list-li {
+                                        list-style: none;
+                                        border-bottom: 1px solid #B2D4FF;
+                                        line-height: 40px;
+                                        font-size: 16px;
+                                        color: #565656;
+                                    }
+                                    .list-li:nth-child(even){
+                                        color: #fff;
+                                        background:rgb(102, 146, 228) ;
+                                    }
+                                    .list-li::after {
+                                        content: '';
+                                        display: table;
+                                        clear: both;
+                                    }
+                                    
+                                    .list-span{
+                                        float: left;
+                                        display: block;
+                                        border-right: 1px solid #B2D4FF;
+                                        padding: 0 10px;
+                                        height: 40px;
+                                        overflow: hidden;
+                                        text-align: center;
+                                    }
+                                    .index{
+                                        width: 80px;
+                                    }
+                                    .song{
+                                        width: calc(25% - 45px);
+                                        text-overflow: ellipsis;
+                                    }
+                                    .last{
+                                        width: 100px;
+                                        
+                                    }
+                                    .list-span:last-child{
+                                        border-right: none;
+                                    }
+                                </style>
+                            </head><body class="scroll-skin-light">
+                    <div class="content">
+                    <div class="title">Charlie's hit songs on QQ music</div>
+                    <div class="ad">广告位：<a class="ad" href="https://www.douban.com/group/696317">欢迎加入：豆瓣小组 辣锅纯辣锅🔥</a></div>
+                    <p class="time">更新时间（每日中午12时更新一次）：2021-01-18</p>
+                    <p class="fans">粉丝总数：2,515,523</p>
+                    <p class="num">过去24小时总收听人数：283w+</p><br>
+                    <p class="title-tip">累计收听量Top20 (巅峰指数、收听人数为过去24小时数据；总收听量统计方法未知，推测为过去7-10天累计)：</p>
+
+                    <ul class="list-ul list-title">
+                            <li class="list-li">
+                                <span class="list-span index">序号</span>
+                                <span class="list-span song">歌曲</span>
+                                <span class="list-span song">收藏</span>
+                                <span class="list-span song">总收听</span>
+                                <span class="list-span song">巅峰指数</span>
+                                <span class="list-span last">收听人数</span>
+                            </li>
+                        </ul>
+                    <ul class="list-ul" id="my_table">
+                        <li class="list-li">
+            <span class="list-span index">1</span>
+            <span class="list-span song">起风了</span>
+            <span class="list-span song">5,744,811</span>
+            <span class="list-span song">138,181,811</span>
+            <span class="list-span song">792,765</span>
+            <span class="list-span last">100w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">2</span>
+            <span class="list-span song">和光同尘</span>
+            <span class="list-span song">1,404,491</span>
+            <span class="list-span song">137,146,579</span>
+            <span class="list-span song">635,829</span>
+            <span class="list-span last">60w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">3</span>
+            <span class="list-span song">大鱼</span>
+            <span class="list-span song">12,174,469</span>
+            <span class="list-span song">123,393,424</span>
+            <span class="list-span song">307,426</span>
+            <span class="list-span last">40w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">4</span>
+            <span class="list-span song">爱情转移</span>
+            <span class="list-span song">338,149</span>
+            <span class="list-span song">109,182,609</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">5</span>
+            <span class="list-span song">天涯尽处</span>
+            <span class="list-span song">240,745</span>
+            <span class="list-span song">108,798,439</span>
+            <span class="list-span song">285,402</span>
+            <span class="list-span last">40w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">6</span>
+            <span class="list-span song">梅香如故</span>
+            <span class="list-span song">2,673,244</span>
+            <span class="list-span song">108,514,097</span>
+            <span class="list-span song">81,747</span>
+            <span class="list-span last">10w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">7</span>
+            <span class="list-span song">无所畏惧</span>
+            <span class="list-span song">141,960</span>
+            <span class="list-span song">106,191,837</span>
+            <span class="list-span song">156,938</span>
+            <span class="list-span last">20w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">8</span>
+            <span class="list-span song">相守</span>
+            <span class="list-span song">148,949</span>
+            <span class="list-span song">105,558,054</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">9</span>
+            <span class="list-span song">化身孤岛的鲸</span>
+            <span class="list-span song">1,147,861</span>
+            <span class="list-span song">105,344,690</span>
+            <span class="list-span song">84,608</span>
+            <span class="list-span last">10w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">10</span>
+            <span class="list-span song">大鱼</span>
+            <span class="list-span song">2,479,615</span>
+            <span class="list-span song">104,761,077</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">11</span>
+            <span class="list-span song">江湖觅知音</span>
+            <span class="list-span song">151,102</span>
+            <span class="list-span song">104,745,079</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">12</span>
+            <span class="list-span song">突如其来的爱情</span>
+            <span class="list-span song">141,520</span>
+            <span class="list-span song">104,253,817</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">13</span>
+            <span class="list-span song">亲爱的旅人啊</span>
+            <span class="list-span song">1,771,193</span>
+            <span class="list-span song">104,177,071</span>
+            <span class="list-span song">55,966</span>
+            <span class="list-span last">1w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">14</span>
+            <span class="list-span song">画绢</span>
+            <span class="list-span song">334,902</span>
+            <span class="list-span song">103,692,790</span>
+            <span class="list-span song">56,264</span>
+            <span class="list-span last">1w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">15</span>
+            <span class="list-span song">雪落下的声音</span>
+            <span class="list-span song">1,098,107</span>
+            <span class="list-span song">103,501,651</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">16</span>
+            <span class="list-span song">昙花一现雨及时</span>
+            <span class="list-span song">1,841,005</span>
+            <span class="list-span song">103,219,785</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">17</span>
+            <span class="list-span song">天下有情人</span>
+            <span class="list-span song">1,188,254</span>
+            <span class="list-span song">102,958,530</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">18</span>
+            <span class="list-span song">触不可及</span>
+            <span class="list-span song">1,123,309</span>
+            <span class="list-span song">102,350,331</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">19</span>
+            <span class="list-span song">愿</span>
+            <span class="list-span song">849,072</span>
+            <span class="list-span song">102,075,430</span>
+            <span class="list-span song">40,210</span>
+            <span class="list-span last">1w+</span>
+        </li>
+<li class="list-li">
+            <span class="list-span index">20</span>
+            <span class="list-span song">微光海洋</span>
+            <span class="list-span song">769,148</span>
+            <span class="list-span song">101,995,296</span>
+            <span class="list-span song">无数据</span>
+            <span class="list-span last">无数据</span>
+        </li>
+                    </ul>
+                </body><footer>
+                        <p class="ad">灵感来源：<a class="ad" href="https://github.com/jsososo/QQMusicApi">jsososo/QQMusicApi</a></p>
+                    </footer></html>
