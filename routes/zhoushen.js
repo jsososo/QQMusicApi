@@ -6,6 +6,7 @@ let template_table_header = {
     "<>": "tr", "html": [
         {"<>": "th", "html": "序号"},
         {"<>": "th", "html": "歌名"},
+        {"<>": "th", "html": "收藏量"},
         {"<>": "th", "html": "总收听量"},
         {"<>": "th", "html": "巅峰指数"},
         {"<>": "th", "html": "收听人数"}
@@ -16,6 +17,7 @@ let template_table_body = {
     "<>": "tr", "html": [
         {"<>": "td", "html": "${index}"},
         {"<>": "td", "html": "${name}"},
+        {"<>": "td", "html": "${favCount}"},
         {"<>": "td", "html": "${listen_count}"},
         {"<>": "td", "html": "${score}"},
         {"<>": "td", "html": "${listenCnt}"}
@@ -106,8 +108,26 @@ async function _getHitInfo(param) {
         }
     })
 }
-
-function _getReportData({ hitSongs, hitInfo }) {
+async function _getFavInfo(param) {
+    const result = await request({
+        url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
+        data: {
+            data: JSON.stringify({
+                comm: {
+                    ct: 24,
+                    cv: 0
+                },
+                singer: {
+                    method: "GetSongFansNumberById",
+                    module: "music.musicasset.SongFavRead",
+                    param
+                }
+            })
+        }
+    })
+    return result.singer.data.m_numbers;
+}
+function _getReportData({ hitSongs, hitInfo, favInfo }) {
     let totalListenCount = 0;
     const { songlist, extras } = hitSongs.singer.data;
     
@@ -116,17 +136,18 @@ function _getReportData({ hitSongs, hitInfo }) {
         Object.assign(o, extras[i] || {});
     });
     const details = songlist.map( ( song, index ) => {
-        const picked = (({ mid, name, listen_count }) => ({ mid, name, listen_count }))(song);
+        const formatted = (({ mid, name, listen_count }) => ({ mid, name, listen_count }))(song);
         const { record, score, listenCnt } = hitInfo.singer.data.data[song.mid] || {};
-        picked.record = record ? record.data : undefined;
-        picked.score = score;
-        picked.listenCnt = listenCnt;
-        picked.index = index+1;
+        formatted.record = record ? record.data : undefined;
+        formatted.score = score;
+        formatted.listenCnt = listenCnt;
+        formatted.index = index+1;
         if( listenCnt ) {
             let [ count ] = listenCnt.match(/\d+/g);
             totalListenCount += parseInt( count );
         }
-        return picked;
+        formatted.favCount = favInfo[song.id];
+        return formatted;
     });
     data = {
         date: moment().tz('Asia/Shanghai').format(),
@@ -140,9 +161,10 @@ module.exports = {
 
     '/hitsongs': async (req, res) => {
         const hitSongs = await _getHitSongs( req.query );
+        const songIdList = hitSongs.singer.data.songlist.map( song => song.id);
         const songMidList = hitSongs.singer.data.songlist.map( song => song.mid);
-        const hitInfo = await _getHitInfo({ songMidList });
-        const data = _getReportData( { hitSongs, hitInfo } );
+        const [ hitInfo, favInfo ] = await Promise.all([_getHitInfo({ songMidList }), _getFavInfo({ v_songId: songIdList })]);
+        const data = _getReportData( { hitSongs, hitInfo, favInfo } );
         if( req.query.format === 'json' ) {
             return res.send({
                 data,
