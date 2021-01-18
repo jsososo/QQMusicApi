@@ -25,6 +25,7 @@
     "morgan": "~1.9.1",
     "useragent": "^2.3.0",
     "cheerio": "^1.0.0-rc.3",
+    "node-json2html": "^1.4.0",
     "js-base64": "^2.5.1",
     "xml2js": "^0.4.22"
   },
