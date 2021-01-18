@@ -119,7 +119,6 @@ async function _getHitInfo(songMidList) {
         });
     }));
 
-    console.log(results);
     return results.reduce((val, cur) => {
         if(cur && cur.singer) {
             return Object.assign(val, cur.singer.data.data);
