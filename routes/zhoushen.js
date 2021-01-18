@@ -1,68 +1,178 @@
 const request  = require('../util/request');
-const json2html = require('node-json2html');
 const moment = require('moment-timezone');
 
-let template_table_header = {
-    "<>": "tr", "html": [
-        {"<>": "th", "html": "序号"},
-        {"<>": "th", "html": "歌名"},
-        {"<>": "th", "html": "收藏量"},
-        {"<>": "th", "html": "总收听量"},
-        {"<>": "th", "html": "巅峰指数"},
-        {"<>": "th", "html": "收听人数"}
-    ]
+function _getTableBody( data ) {
+    const transformed = data.map( ({index, name, favCount, weeklyListenCount, score='无数据', hitListenCount='无数据' }) => {
+        return `<li class="list-li">
+            <span class="list-span index">${index}</span>
+            <span class="list-span song">${name}</span>
+            <span class="list-span song">${favCount}</span>
+            <span class="list-span song">${weeklyListenCount}</span>
+            <span class="list-span song">${score}</span>
+            <span class="list-span last">${hitListenCount}</span>
+        </li>`;
+    });
+    return transformed.join('\n');
 }
-
-let template_table_body = {
-    "<>": "tr", "html": [
-        {"<>": "td", "html": "${index}"},
-        {"<>": "td", "html": "${name}"},
-        {"<>": "td", "html": "${favCount}"},
-        {"<>": "td", "html": "${listen_count}"},
-        {"<>": "td", "html": "${score}"},
-        {"<>": "td", "html": "${listenCnt}"}
-    ]
-}
-
 function writeHtmlFromJson(data) {
-    let table_header = json2html.transform(data.details[0], template_table_header);
-    let table_body = json2html.transform(data.details, template_table_body);
-
+    const listHeader = `<ul class="list-ul list-title">
+                            <li class="list-li">
+                                <span class="list-span index">序号</span>
+                                <span class="list-span song">歌曲</span>
+                                <span class="list-span song">收藏</span>
+                                <span class="list-span song">总收听</span>
+                                <span class="list-span song">巅峰指数</span>
+                                <span class="list-span last">收听人数</span>
+                            </li>
+                        </ul>`;
+    let listBody = _getTableBody( data.details );
     let header = `<!DOCTYPE html>
                         <html>
                             <head>
                                 <title>周深QQ音乐数据</title>
-                                <meta charset="utf-8">
+                                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
                                 <style>
-                                    table {
-                                        font-family: arial, sans-serif;
-                                        border-collapse: collapse;
-                                        width: 100%;
+                                    * {
+                                        box-sizing: border-box;
+                                        font-family: "microsoft yahei", arial, sans-serif;
                                     }
-
-                                    title, h1, p {
-                                        font-family: arial, sans-serif;
+                                    
+                                    body {
+                                        margin: 0;
+                                        padding: 0;
                                     }
-                                    td, th {
-                                        border: 1px solid #dddddd;
-                                        text-align: left;
-                                        padding: 8px;
+                                    
+                                    /*light skin*/
+                                    
+                                    .scroll-skin-light::-webkit-scrollbar {
+                                        width: 4px;
+                                        height: 4px;
+                                        background-color: #f5f5f5;
                                     }
-
-                                    tr:nth-child(even) {
-                                        background-color: #dddddd;
+                                    
+                                    .scroll-skin-light::-webkit-scrollbar-track {
+                                        border-radius: 2px;
+                                        background-color: #f5f5f5;
+                                    }
+                                    
+                                    .scroll-skin-light::-webkit-scrollbar-thumb {
+                                        border-radius: 2px;
+                                        background-color: #d5e3ff;
+                                    }
+                                    
+                                    
+                                    .content {
+                                        /*padding: 20px;*/
+                                    }
+                                    
+                                    .title {
+                                        font-size: 16px;
+                                        background: rgb(102, 146, 228);
+                                        border-radius: 0 0 15px 15px;
+                                        line-height: 50px;
+                                        padding: 0 20px;
+                                        color: #fff;
+                                        /*font-family: "microsoft yahei";*/
+                                    }
+                                    .ad {
+                                        font-size: 16px;
+                                        padding: 0 20px;
+                                        color: rgb(102, 146, 228);
+                                    }
+                                    
+                                    .time,
+                                    .fans,
+                                    .num {
+                                        text-align: right;
+                                        margin: 10px 20px;
+                                        font-size: 14px;
+                                        color: rgb(102, 146, 228);
+                                    }
+                                    
+                                    .table-title {
+                                        font-size: 16px;
+                                        margin: 0 0 0 20px;
+                                        color: rgb(102, 146, 228);
+                                    }
+                                    
+                                    .title-tip {
+                                        font-size: 12px;
+                                        color: #B2D4FF;
+                                        padding: 0 20px;
+                                    }
+                                    
+                                    .list-ul {
+                                        padding: 0;
+                                        margin: 0;
+                                        height: auto;
+                                        /**/
+                                    }
+                                    .list-title{
+                                        border-top:1px solid #B2D4FF;
+                                    }
+                                    .list-title .list-span{
+                                        color: rgb(102, 146, 228);
+                                    }
+                                    .list-li {
+                                        list-style: none;
+                                        border-bottom: 1px solid #B2D4FF;
+                                        line-height: 40px;
+                                        font-size: 16px;
+                                        color: #565656;
+                                    }
+                                    .list-li:nth-child(even){
+                                        color: #fff;
+                                        background:rgb(102, 146, 228) ;
+                                    }
+                                    .list-li::after {
+                                        content: '';
+                                        display: table;
+                                        clear: both;
+                                    }
+                                    
+                                    .list-span{
+                                        float: left;
+                                        display: block;
+                                        border-right: 1px solid #B2D4FF;
+                                        padding: 0 10px;
+                                        height: 40px;
+                                        overflow: hidden;
+                                        text-align: center;
+                                    }
+                                    .index{
+                                        width: 80px;
+                                    }
+                                    .song{
+                                        width: calc(25% - 45px);
+                                        text-overflow: ellipsis;
+                                    }
+                                    .last{
+                                        width: 100px;
+                                        
+                                    }
+                                    .list-span:last-child{
+                                        border-right: none;
                                     }
                                 </style>
                             </head>`;
-    let body = `<h1>周深QQ音乐数据</h1>
-                <p>中国时间：${data.date}</p>
-                <p>粉丝总数：${data.fans}</p>
-                <p>过去24小时总收听人数：${data.totalListenCount}</p><br>
-                <p>累计收听量Top${data.details.length} (收听人数为过去24小时；总收听量统计方法未知，推测为过去7-10天累计)：</p>
-                <table id="my_table"><thead>${table_header}</thead><tbody>${table_body}</tbody></table>`;
-    body = `<body>${body}</body>`
+    const body = `<body class="scroll-skin-light">
+                    <div class="content">
+                    <div class="title">Charlie's hit songs on QQ music</div>
+                    <div class="ad">广告位：<a class="ad" href="https://www.douban.com/group/696317">欢迎加入：豆瓣小组 辣锅纯辣锅🔥</a></div>
+                    <p class="time">中国时间：${data.date}</p>
+                    <p class="fans">粉丝总数：${data.fans}</p>
+                    <p class="num">过去24小时总收听人数：${data.totalListenCount}</p><br>
+                    <p class="title-tip">累计收听量Top${data.details.length} (巅峰指数、收听人数为过去24小时数据；总收听量统计方法未知，推测为过去7-10天累计)：</p>
 
-    let html = header + body + '</html>';
+                    ${listHeader}
+                    <ul class="list-ul" id="my_table">
+                        ${listBody}
+                    </ul>
+                </body>`;
+    const footer = `<footer>
+                        <p class="ad">灵感来源：<a class="ad" href="https://github.com/jsososo/QQMusicApi">jsososo/QQMusicApi</a></p>
+                    </footer>`
+    let html = header + body + footer + '</html>';
 
     return html;
 }
@@ -153,11 +263,11 @@ function _getReportData({ hitSongs, hitInfo, favInfo }) {
         Object.assign(o, extras[i] || {});
     });
     const details = songlist.map( ( song, index ) => {
-        const formatted = (({ mid, name, listen_count }) => ({ mid, name, listen_count }))(song);
+        const formatted = (({ mid, name, listen_count:weeklyListenCount }) => ({ mid, name, weeklyListenCount }))(song);
         const { record, score, listenCnt } = hitInfo[song.mid] || {};
         formatted.record = record ? record.data : undefined;
         formatted.score = score;
-        formatted.listenCnt = listenCnt;
+        formatted.hitListenCount = listenCnt;
         formatted.index = index+1;
         if( listenCnt ) {
             let [ count ] = listenCnt.match(/\d+/g);
