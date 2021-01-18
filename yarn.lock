@@ -605,6 +605,11 @@ negotiator@0.6.2:
   resolved "https://registry.npm.taobao.org/negotiator/download/negotiator-0.6.2.tgz?cache=0&sync_timestamp=1589682752355&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnegotiator%2Fdownload%2Fnegotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
   integrity sha1-/qz3zPUlp3rpY0Q2pkiD/+yjRvs=
 
+node-json2html@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/node-json2html/-/node-json2html-1.4.0.tgz#4240ec6294cdaba1c3bc0016125b3114110fd649"
+  integrity sha512-JqAMz0AFN6ceyR2rM6rjrPnfdxxoxcp5plHyw2geG6LD8XoeBLlvAIyV9Xw3gJqN3yFHgfbF4ggTzKGpTs37ZQ==
+
 nth-check@~1.0.1:
   version "1.0.2"
   resolved "https://registry.npm.taobao.org/nth-check/download/nth-check-1.0.2.tgz#b2bd295c37e3dd58a3bf0700376663ba4d9cf05c"
