@@ -1,14 +1,18 @@
 const request  = require('../util/request');
 const moment = require('moment-timezone');
 
+function _numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function _getTableBody( data ) {
     const transformed = data.map( ({index, name, favCount, weeklyListenCount, score='无数据', hitListenCount='无数据' }) => {
         return `<li class="list-li">
             <span class="list-span index">${index}</span>
             <span class="list-span song">${name}</span>
-            <span class="list-span song">${favCount}</span>
-            <span class="list-span song">${weeklyListenCount}</span>
-            <span class="list-span song">${score}</span>
+            <span class="list-span song">${_numberWithCommas(favCount)}</span>
+            <span class="list-span song">${_numberWithCommas(weeklyListenCount)}</span>
+            <span class="list-span song">${_numberWithCommas(score)}</span>
             <span class="list-span last">${hitListenCount}</span>
         </li>`;
     });
