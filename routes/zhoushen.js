@@ -30,30 +30,34 @@ function writeHtmlFromScoresJson(data) {
     let header = `<!DOCTYPE html>
                         <html>
                             <head>
-                                <title>Report</title>
+                                <title>周深QQ音乐数据</title>
                                 <meta charset="utf-8">
                                 <style>
                                     table {
-                                    font-family: arial, sans-serif;
-                                    border-collapse: collapse;
-                                    width: 100%;
+                                        font-family: arial, sans-serif;
+                                        border-collapse: collapse;
+                                        width: 100%;
                                     }
 
+                                    title, h1, p {
+                                        font-family: arial, sans-serif;
+                                    }
                                     td, th {
-                                    border: 1px solid #dddddd;
-                                    text-align: left;
-                                    padding: 8px;
+                                        border: 1px solid #dddddd;
+                                        text-align: left;
+                                        padding: 8px;
                                     }
 
                                     tr:nth-child(even) {
-                                    background-color: #dddddd;
+                                        background-color: #dddddd;
                                     }
                                 </style>
                             </head>`;
-    let body = `<h1>周深QQ音乐收听量Top20</h1><br>
-                <p>日期：${date.toLocaleString()}</p>
+    let body = `<h1>周深QQ音乐数据</h1>
+                <p>时间：${date.toLocaleString('zh-CN')}</p>
                 <p>粉丝总数：${data.fans}</p>
-                <p>过去24小时总收听人数：${data.totalListenCount}</p>
+                <p>过去24小时总收听人数：${data.totalListenCount}</p><br>
+                <p>累计收听量Top20 (收听人数为过去24小时；总收听量统计方法未知，推测为过去7-10天累计)：</p>
                 <table id="my_table"><thead>${table_header}</thead><tbody>${table_body}</tbody></table>`;
     body = `<body>${body}</body>`
 
