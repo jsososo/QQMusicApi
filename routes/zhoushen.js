@@ -1,5 +1,8 @@
 const request  = require('../util/request');
 const moment = require('moment-timezone');
+const fs = require('fs')
+const path = require('path');;
+const fsPromises = fs.promises;
 
 function _numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -18,7 +21,7 @@ function _getTableBody( data ) {
     });
     return transformed.join('\n');
 }
-function writeHtmlFromJson(data) {
+async function writeHtmlFromJson(data) {
     const listHeader = `<ul class="list-ul list-title">
                             <li class="list-li">
                                 <span class="list-span index">序号</span>
@@ -164,8 +167,8 @@ function writeHtmlFromJson(data) {
                     <div class="content">
                     <div class="title">Charlie's hit songs on QQ music</div>
                     <div class="ad">广告位：<a class="ad" href="https://www.douban.com/group/696317">欢迎加入：豆瓣小组 辣锅纯辣锅🔥</a></div>
-                    <p class="time">中国时间：${data.date}</p>
-                    <p class="fans">粉丝总数：${data.fans}</p>
+                    <p class="time">更新时间（每日中午12时更新一次）：${data.date}</p>
+                    <p class="fans">粉丝总数：${_numberWithCommas(data.fans)}</p>
                     <p class="num">过去24小时总收听人数：${data.totalListenCount}</p><br>
                     <p class="title-tip">累计收听量Top${data.details.length} (巅峰指数、收听人数为过去24小时数据；总收听量统计方法未知，推测为过去7-10天累计)：</p>
 
@@ -178,7 +181,7 @@ function writeHtmlFromJson(data) {
                         <p class="ad">灵感来源：<a class="ad" href="https://github.com/jsososo/QQMusicApi">jsososo/QQMusicApi</a></p>
                     </footer>`
     let html = header + body + footer + '</html>';
-
+    await fsPromises.writeFile(`./public/cache/${data.date}.html`, html, { flag: 'wx' } );
     return html;
 }
 
@@ -259,7 +262,7 @@ async function _getFavInfo(param) {
     })
     return result.singer.data.m_numbers;
 }
-function _getReportData({ hitSongs, hitInfo, favInfo }) {
+function _getReportData({ hitSongs, hitInfo, favInfo, date }) {
     let totalListenCount = 0;
     const { songlist, extras } = hitSongs.singer.data;
     
@@ -282,7 +285,7 @@ function _getReportData({ hitSongs, hitInfo, favInfo }) {
         return formatted;
     });
     data = {
-        date: moment().tz('Asia/Shanghai').format(),
+        date,
         totalListenCount: totalListenCount + 'w+',
         fans: hitSongs.singer.data.singer_info.fans,
         details,
@@ -292,18 +295,25 @@ function _getReportData({ hitSongs, hitInfo, favInfo }) {
 module.exports = {
 
     '/hitsongs': async (req, res) => {
-        const hitSongs = await _getHitSongs( req.query );
-        const songIdList = hitSongs.singer.data.songlist.map( song => song.id);
-        const songMidList = hitSongs.singer.data.songlist.map( song => song.mid);
-        const [ hitInfo, favInfo ] = await Promise.all([_getHitInfo(songMidList), _getFavInfo({ v_songId: songIdList })]);
-        const data = _getReportData( { hitSongs, hitInfo, favInfo } );
-        if( req.query.format === 'json' ) {
-            return res.send({
-                data,
-                result: data.details.length
-            })
+        const date = moment().tz('Asia/Shanghai').format().substring(0, 10);
+        let html = null;
+        try {
+            html = await fsPromises.readFile(`./public/cache/${date}.html`);
+        } catch (err) {
+            const hitSongs = await _getHitSongs( req.query );
+            const songIdList = hitSongs.singer.data.songlist.map( song => song.id);
+            const songMidList = hitSongs.singer.data.songlist.map( song => song.mid);
+            const [ hitInfo, favInfo ] = await Promise.all([_getHitInfo(songMidList), _getFavInfo({ v_songId: songIdList })]);
+            const data = _getReportData( { hitSongs, hitInfo, favInfo, date } );
+            if( req.query.format === 'json' ) {
+                return res.send({
+                    data,
+                    result: data.details.length
+                })
+            }
+            html = await writeHtmlFromJson( data );
         }
-        const html = writeHtmlFromJson( data );
+        
         res.writeHead(200, {
             'Content-Type': 'text/html'
         });
