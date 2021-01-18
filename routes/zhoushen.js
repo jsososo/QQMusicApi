@@ -90,23 +90,40 @@ async function _getHitSongs ( { singermid='003fA5G40k6hKc', num=20, page=1 } ) {
         }
     });
 }
-async function _getHitInfo(param) {
-    return request({
-        url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
-        data: {
-            data: JSON.stringify({
-                comm: {
-                    ct: 24,
-                    cv: 0
-                },
-                singer: {
-                    method: "GetPlayTopData",
-                    module: "music.musicToplist.PlayTopInfoServer",
-                    param
-                }
-            })
+async function _getHitInfo(songMidList) {
+
+    const requestCount = songMidList.length/10;
+    const lists = [];
+    for(let i=0; i<requestCount; i++ ) {
+        lists.push(songMidList.slice(i*10, i*10+9));
+    }
+
+    const results = await Promise.all(lists.map(async (list) => {
+        return request({
+            url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
+            data: {
+                data: JSON.stringify({
+                    comm: {
+                        ct: 24,
+                        cv: 0
+                    },
+                    singer: {
+                        method: "GetPlayTopData",
+                        module: "music.musicToplist.PlayTopInfoServer",
+                        param: {
+                            songMidList: list
+                        }
+                    }
+                })
+            }
+        });
+    }));
+
+    return results.reduce((val, cur) => {
+        if(cur && cur.singer) {
+            return Object.assign(val, cur.singer.data.data);
         }
-    })
+    },{});
 }
 async function _getFavInfo(param) {
     const result = await request({
@@ -137,7 +154,7 @@ function _getReportData({ hitSongs, hitInfo, favInfo }) {
     });
     const details = songlist.map( ( song, index ) => {
         const formatted = (({ mid, name, listen_count }) => ({ mid, name, listen_count }))(song);
-        const { record, score, listenCnt } = hitInfo.singer.data.data[song.mid] || {};
+        const { record, score, listenCnt } = hitInfo[song.mid] || {};
         formatted.record = record ? record.data : undefined;
         formatted.score = score;
         formatted.listenCnt = listenCnt;
@@ -163,7 +180,7 @@ module.exports = {
         const hitSongs = await _getHitSongs( req.query );
         const songIdList = hitSongs.singer.data.songlist.map( song => song.id);
         const songMidList = hitSongs.singer.data.songlist.map( song => song.mid);
-        const [ hitInfo, favInfo ] = await Promise.all([_getHitInfo({ songMidList }), _getFavInfo({ v_songId: songIdList })]);
+        const [ hitInfo, favInfo ] = await Promise.all([_getHitInfo(songMidList), _getFavInfo({ v_songId: songIdList })]);
         const data = _getReportData( { hitSongs, hitInfo, favInfo } );
         if( req.query.format === 'json' ) {
             return res.send({
