@@ -1,5 +1,6 @@
 const request  = require('../util/request');
 const json2html = require('node-json2html');
+const moment = require('moment-timezone');
 
 let template_table_header = {
     "<>": "tr", "html": [
@@ -52,7 +53,7 @@ function writeHtmlFromJson(data) {
                                 </style>
                             </head>`;
     let body = `<h1>周深QQ音乐数据</h1>
-                <p>时间：${data.date}</p>
+                <p>中国时间：${data.date}</p>
                 <p>粉丝总数：${data.fans}</p>
                 <p>过去24小时总收听人数：${data.totalListenCount}</p><br>
                 <p>累计收听量Top${data.details.length} (收听人数为过去24小时；总收听量统计方法未知，推测为过去7-10天累计)：</p>
@@ -128,7 +129,7 @@ function _getReportData({ hitSongs, hitInfo }) {
         return picked;
     });
     data = {
-        date: ( new Date() ).toLocaleString('zh-CN'),
+        date: moment().tz('Asia/Shanghai').format(),
         totalListenCount: totalListenCount + 'w+',
         fans: hitSongs.singer.data.singer_info.fans,
         details,
