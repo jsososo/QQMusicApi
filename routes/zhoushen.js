@@ -142,10 +142,17 @@ module.exports = {
         const hitSongs = await _getHitSongs( req.query );
         const songMidList = hitSongs.singer.data.songlist.map( song => song.mid);
         const hitInfo = await _getHitInfo({ songMidList });
-        const html = writeHtmlFromJson( _getReportData( { hitSongs, hitInfo } ) );
+        const data = _getReportData( { hitSongs, hitInfo } );
+        if( req.query.format === 'json' ) {
+            return res.send({
+                data,
+                result: data.details.length
+            })
+        }
+        const html = writeHtmlFromJson( data );
         res.writeHead(200, {
             'Content-Type': 'text/html'
         });
         res.end(html);
-  }
+    }
 }
