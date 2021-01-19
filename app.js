@@ -69,7 +69,6 @@ fs.readdirSync(path.join(__dirname, 'routes')).forEach(file => {
       req.cookies.uin = uin.replace(/\D/g, '');
       const func = RouterMap[path];
 
-      console.log(`/${filename}${path}`, path, func);
       router.post('/', (req, res, next) => func(req, res, next));
       router.get('/', (req, res, next) => func(req, res, next));
       if (corsMap[`/${filename}${path}`]) {
@@ -86,10 +85,10 @@ fs.readdirSync(path.join(__dirname, 'routes')).forEach(file => {
   });
 });
 
-app.use('/', (req, res) => {
-  const router = express.Router()
+app.use('/', (req, res, next) => {
+  const router = express.Router();
   router.get('/', (req, res) => require('./routes/index')['/'](req, res))
-  router(req, res);
+  router(req, res, next);
 });
 
 // catch 404 and forward to error handler
