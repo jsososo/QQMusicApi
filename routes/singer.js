@@ -100,7 +100,7 @@ module.exports = {
         }
       };
       res.send(cacheData);
-      cache.set(cacheKey, result, 2 * 60);
+      cache.set(cacheKey, cacheData, 2 * 60);
     }
   },
 
