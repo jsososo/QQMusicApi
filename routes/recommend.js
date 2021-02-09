@@ -109,8 +109,7 @@ module.exports = {
         errMsg: '未登录'
       })
     }
-    // const listInfo = await songlist["/"]({ query: id });
-    const listInfo = {};
+    const listInfo = await songlist["/"]({ query: { id } });
     return res.send(listInfo);
   },
 

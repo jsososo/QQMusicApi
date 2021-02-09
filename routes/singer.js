@@ -31,7 +31,13 @@ module.exports = {
     }, {
       dataType: 'xml',
     });
-  
+
+    const info = result.result.data.info;
+
+    ['basic', 'other'].forEach((k) => {
+      info[k] && info[k].item && !Array.isArray(info[k].item) && (info[k].item = [info[k].item])
+    })
+
     if (!Number(raw)) {
       result = {
         result: 100,
