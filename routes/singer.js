@@ -1,4 +1,5 @@
 const request  = require('../util/request');
+const cheerio = require('cheerio');
 
 module.exports = {
   // 获取歌手介绍
@@ -32,7 +33,17 @@ module.exports = {
       dataType: 'xml',
     });
 
-    const info = result.result.data.info;
+    const page = await request({
+      url: `https://y.qq.com/n/yqq/singer/${singermid}.html`,
+    }, {
+      dataType: 'raw'
+    })
+
+    const $ = cheerio.load(page);
+
+    const info = result.result.data.info || {};
+
+    info.singername = $('.data__name_txt.js_index').text();
 
     ['basic', 'other'].forEach((k) => {
       info[k] && info[k].item && !Array.isArray(info[k].item) && (info[k].item = [info[k].item])
@@ -41,7 +52,7 @@ module.exports = {
     if (!Number(raw)) {
       result = {
         result: 100,
-        data: result.result.data.info,
+        data: info,
       };
     }
     res.send(result);
