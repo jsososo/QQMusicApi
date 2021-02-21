@@ -259,8 +259,12 @@ const song = {
       }
     };
 
-    while (!isOk && count < 10) {
-      await reqFun();
+    while (!isOk && count < 5) {
+      await reqFun().catch(() => count += 1);
+    }
+
+    if (!result || !result.req_0) {
+      return res.send({ result: 200, errMsg: '获取链接失败，建议检查是否登录'})
     }
 
     const domain = result.req_0.data.sip.find(i => !i.startsWith('http://ws')) || result.req_0.data.sip[0];
