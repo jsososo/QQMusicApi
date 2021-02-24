@@ -2,12 +2,12 @@
 
 这是一个基于 Express + Axios 的 Nodejs 项目，一切仅供学习参考，该支持的还是要支持的，不然杰伦喝不起奶茶了。
 
-其实有点点嫌弃qq音乐接口的数据格式，所以会对部分接口返回做一些处理，但是考虑到一些之前扒过接口的项目，有些人可能还是喜欢原汁原味，
+其实有点点嫌弃 qq 音乐接口的数据格式，所以会对部分接口返回做一些处理，但是考虑到一些之前扒过接口的项目，有些人可能还是喜欢原汁原味，
 可以在接口处增加一个参数 `raw=1` 。
 
 对于所有处理过的返回数据，都会包含 `result`，`100` 表示成功，`500` 表示穿参错误，`400` 为 node 捕获的未知异常，`301` 表示缺少用户登陆的 cookie
 
-关于如何在服务器上存储 cookie，可以查看接口 [设置用户Cookie](#设置用户Cookie)
+关于如何在服务器上存储 cookie，可以查看接口 [设置用户 Cookie](#设置用户Cookie)
 
 灵感来源：[Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
@@ -21,21 +21,23 @@ $ npm install
 $ npm start
 ```
 
-项目默认端口为 3300，默认qq号 1234567 (设置Cookie)，可以通过修改 `bin/config.js` 或设置启动参数 `PORT=3400 QQ=7654321 npm start`
+项目默认端口为 3300，默认 qq 号 1234567 (设置 Cookie)，可以通过修改 `bin/config.js` 或设置启动参数 `PORT=3400 QQ=7654321 npm start`
 
-如果使用的是微信号，则将 `bin/config.js` 中的 qq好改为 `wxuin`，具体数值可以在网页版qq音乐的 cookie 中获取
+如果使用的是微信号，则将 `bin/config.js` 中的 qq 好改为 `wxuin`，具体数值可以在网页版 qq 音乐的 cookie 中获取
 
-如果需要启用数据统计、ip拦截等，可以将 `bin/config.js` 中的 `useDataStatistics` 设为 `true` （会存在直接拦截部分来自其他后台的请求）
+如果需要启用数据统计、ip 拦截等，可以将 `bin/config.js` 中的 `useDataStatistics` 设为 `true` （会存在直接拦截部分来自其他后台的请求）
 
 **在线接口测试网址：[http://api.qq.jsososo.com](http://api.qq.jsososo.com)**
 
 ## 用前须知
 
+!> 简化私有 `cookie` 提交方式, 现在可通过请求头中增加 `token` 字段提交
+
 !> 公用 cookie 的形式会存在封号风险，因此现在默认取消了公用 cookie 方法，望注意
 
 !> 该项目仅做接口转发，部分接口通过修改 `Referer` 实现，所有数据均不做存储处理，大家还是理性的保护好自己的个人信息，谨防诈骗
 
-!> QQ音乐登陆的这个问题还是难绕过去，目前还是需要登陆并手动获取 [https://y.qq.com](https://y.qq.com) 的 `cookie`，注入网站或node，
+!> QQ 音乐登陆的这个问题还是难绕过去，目前还是需要登陆并手动获取 [https://y.qq.com](https://y.qq.com) 的 `cookie`，注入网站或 node，
 如果又什么更好的解决办法，欢迎大家提 pr 给我
 
 !> 另，可以通过 [qqmusic-cookie-porter](https://github.com/jsososo/qqmusic-cookie-porter) 这个 chrome 插件半自动获取 cookie
@@ -44,27 +46,27 @@ $ npm start
 本项目仅供学习使用，请尊重版权，请勿利用此项目从事商业行为!
 本项目仅供学习使用，请尊重版权，请勿利用此项目从事商业行为!
 
-!> 接口仅作为测试或者方便听歌使用，发现有人使用其他服务大量的调用接口导致服务经常性挂掉重启，所以加入了ip检测和黑白名单机制，
-想用的童鞋请自行clone走项目启动，我也没钱升级我的服务器了！！
+!> 接口仅作为测试或者方便听歌使用，发现有人使用其他服务大量的调用接口导致服务经常性挂掉重启，所以加入了 ip 检测和黑白名单机制，
+想用的童鞋请自行 clone 走项目启动，我也没钱升级我的服务器了！！
 
 ## 常见问题
 
 1、为什么无法获取音乐链接等？
 
-请确保已正确添加绿钻账号 Cookie 信息，具体操作可以查看 [设置用户cookie](#设置用户cookie)，检测是否设置成功可以查看 [查看当前cookie](#查看当前cookie)
+请确保已正确添加绿钻账号 Cookie 信息，具体操作可以查看 [设置用户 cookie](#设置用户cookie)，检测是否设置成功可以查看 [查看当前 cookie](#查看当前cookie)
 
 2、为什么返回了 `自己起一个 node 服务 这么难？？?` 或 被加入了黑名单 ?
 
 第一个，服务默认禁止了一些明显来源于爬虫的接口，可以将 `util/dataStatistics.js` 中相关代码注释重启，
 如果短时大量请求会被拉入黑名单，可以通过移除黑名单、加入白名单，或者干脆在 `app.js` 里注释 `dataHandle` 相关代码
 
-
 ## 更新记录
+
 21-02-10 🦛 修复部分歌手页面报错 & 增加歌手名字获取
 
 21-02-09 🍡 修复日推歌单 & 部分歌手详情格式问题
 
-21-01-19 🐙 优化404报错
+21-01-19 🐙 优化 404 报错
 
 21-01-17 🐊 优化获取链接接口报错提示
 
@@ -100,21 +102,21 @@ $ npm start
 
 20-01-31：🐑 配合 chrome 插件自动获取存储 cookie
 
-20-01-30：🍲 增加快速搜索接口、歌单、专辑、歌单、mv的评论获取
+20-01-30：🍲 增加快速搜索接口、歌单、专辑、歌单、mv 的评论获取
 
 20-01-19：😢 [issue#9](https://github.com/jsososo/QQMusicApi/issues/9)
 
-20-01-17：👑 更新歌曲链接的域名ip
+20-01-17：👑 更新歌曲链接的域名 ip
 
 20-01-09：🦈 反馈
 
 20-01-07：🔫 歌单搜索接口修改
 
-19-12-23：🦑 排行榜相关接口优化、新增相似歌曲、相关歌单、相关mv
+19-12-23：🦑 排行榜相关接口优化、新增相似歌曲、相关歌单、相关 mv
 
-19-12-18：🍒 批量获取歌曲信息、top排行榜数据优化
+19-12-18：🍒 批量获取歌曲信息、top 排行榜数据优化
 
-19-12-11：🚀 高频ip黑白名单
+19-12-11：🚀 高频 ip 黑白名单
 
 19-12-05：🏎️ 获取 mp3 和无损 ape、flac 等格式链接
 
@@ -142,9 +144,9 @@ $ npm start
 
 !> 非常重要，特别是和登陆 cookie 有关的参数
 
-1、`raw` 前面提到的，默认为 `0`, 如果传了非0参数，则表示使用原汁原味的数据结构
+1、`raw` 前面提到的，默认为 `0`, 如果传了非 0 参数，则表示使用原汁原味的数据结构
 
-2、`ownCookie` 默认为 `0`，使用服务器上预存的 `cookie` 信息, 非0表示使用浏览器传过来的 `cookie`，如果不使用的话，部分接口会遇到 `301`，
+2、`ownCookie` 默认为 `0`，使用服务器上预存的 `cookie` 信息, 非 0 表示使用浏览器传过来的 `cookie`，如果不使用的话，部分接口会遇到 `301`，
 如果该用户非 vip，也无法获取大部分歌曲的播放链接，我自己会不定时的更新这个服务器上（api.qq.jsososo.com）的 `cookie`作为登陆用户
 
 ## 接口文档
@@ -158,6 +160,7 @@ $ npm start
 接口：`/vkey`
 
 返回示例：
+
 ```javascript
 {
   "data": {
@@ -170,7 +173,7 @@ $ npm start
 }
 ```
 
-下面是不同格式的音乐对应的 url 拼接，可稳定获取128k的播放链接，但是高品质会被403，还在摸索中。。。
+下面是不同格式的音乐对应的 url 拼接，可稳定获取 128k 的播放链接，但是高品质会被 403，还在摸索中。。。
 
 ```javascript
 // content 参数里面的文件类型可以用在下载的时候，后端将歌曲转成流，并标注返回的类型（content）
@@ -242,9 +245,9 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 `id`: songmid
 
-`type`: 默认 128 // 128：mp3 128k，320：mp3 320k，m4a：m4a格式 128k，flac：flac格式 无损，ape：ape格式 无损
+`type`: 默认 128 // 128：mp3 128k，320：mp3 320k，m4a：m4a 格式 128k，flac：flac 格式 无损，ape：ape 格式 无损
 
-`mediaId`: 这个字段为其他接口中返回的 strMediaId 字段，可不传，不传默认同 songmid，但是部分歌曲不传可能会出现能获取到链接，但实际404，
+`mediaId`: 这个字段为其他接口中返回的 strMediaId 字段，可不传，不传默认同 songmid，但是部分歌曲不传可能会出现能获取到链接，但实际 404，
 所以有条件的大家都传吧
 
 `isRedirect`: 默认 0，非 0 时直接重定向到播放链接
@@ -257,6 +260,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 ### 搜索
 
 #### 搜索
+
 接口：`/search`
 
 参数：
@@ -267,7 +271,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 `pageSize`: 一页返回数量，默认 20
 
-`t`: 搜索类型 默认为 0  // 0：单曲，2：歌单，7：歌词，8：专辑，9：歌手，12：mv
+`t`: 搜索类型 默认为 0 // 0：单曲，2：歌单，7：歌词，8：专辑，9：歌手，12：mv
 
 示例：[/search?key=周杰伦](http://api.qq.jsososo.com/search?key=周杰伦)
 
@@ -320,7 +324,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 如果没有则表示无法获取到播放链接。这个接口的作用是，对于其他平台的歌单如果需要获取到企鹅音乐的信息时，
 可以通过 歌名 + 歌手 + 专辑 等关键词获取大致的歌曲，当然这是并不能保障稳定的。
 
-示例：[/song/find?key=周杰伦%2f稻香](http://api.qq.jsososo.com/song/find?key=周杰伦%2f稻香)
+示例：[/song/find?key=周杰伦%2f 稻香](http://api.qq.jsososo.com/song/find?key=周杰伦%2f稻香)
 
 #### 批量获取
 
@@ -330,11 +334,12 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 参数：
 
-`data`: 对象，`key` 为歌曲id，`value` 为搜索关键词
+`data`: 对象，`key` 为歌曲 id，`value` 为搜索关键词
 
 同样，并不是所有传过去的 id 都会有返回，没返回就是没有找到，返回的歌曲也都是会包含播放链接
 
 示例：
+
 ```javascript
 anxios({
 	url: "/song/finds",
@@ -357,10 +362,9 @@ anxios({
 
 ```
 
-
 ### 用户信息
 
-#### 设置用户Cookie
+#### 设置用户 Cookie
 
 接口：`/user/setCookie`
 
@@ -371,7 +375,7 @@ anxios({
 该方法仅支持 post 请求，`content-type` 选择 `application/json`，同时，当且仅当传入的 cookie 为写配置的 QQ 号（启动参数 或 `bin/config.js`）时才会
 被作为默认的公用 cookie 存储使用，各位在搭建自己的服务时记得修改这里的信。参考如下 ![设置cookie](http://static.jsososo.com/200521/140442/bd3dd265f2da8be02429436592876b5b.png)
 
-#### 查看当前Cookie
+#### 查看当前 Cookie
 
 接口 `/user/cookie`
 
@@ -385,9 +389,9 @@ anxios({
 
 参数：
 
-`id`: qq号 必填
+`id`: qq 号 必填
 
-返回中 `mymusic` 为喜欢的音乐，`mydiss` 为用户创建的歌单，需要注意的是，喜欢的音乐中的歌单id为 `id`，歌单中的歌单id为 `dissid`
+返回中 `mymusic` 为喜欢的音乐，`mydiss` 为用户创建的歌单，需要注意的是，喜欢的音乐中的歌单 id 为 `id`，歌单中的歌单 id 为 `dissid`
 
 示例：[/user/detail?id=123456](http://api.qq.jsososo.com/user/detail?id=123456)
 
@@ -397,7 +401,7 @@ anxios({
 
 参数：
 
-`id`: qq号 必填
+`id`: qq 号 必填
 
 这个接口比上一个接口更纯粹，只获取创建的歌单，且数据结构更简单，非必须登陆 Cookie，但如果用户未公开主页时，只有本人的 Cookie 才能获取数据
 
@@ -409,7 +413,7 @@ anxios({
 
 参数：
 
-`id`: qq号，必填，默认取 cookie 中 `uin`
+`id`: qq 号，必填，默认取 cookie 中 `uin`
 
 `pageNo`: 默认 1
 
@@ -423,7 +427,7 @@ anxios({
 
 参数：
 
-`id`: qq号，必填，默认取 cookie 中 `uin`
+`id`: qq 号，必填，默认取 cookie 中 `uin`
 
 `pageNo`: 默认 1
 
@@ -438,11 +442,12 @@ anxios({
 接口：`/songlist`
 
 参数：
-`id`: 歌单id 必填
+`id`: 歌单 id 必填
 
 返回说明：
 
-这些表示各种码率对应的文件大小，如果为0则表示该格式的文件不存在
+这些表示各种码率对应的文件大小，如果为 0 则表示该格式的文件不存在
+
 ```javascript
 {
   "size128": 1922927,
@@ -470,7 +475,7 @@ anxios({
 
 `pageSize`: 默认为 20
 
-`pageNo`: 默认为1
+`pageNo`: 默认为 1
 
 `sort`: 默认是 5，// 5: 推荐，2: 最新，其他数字的排列值最后都会返回推荐
 
@@ -478,7 +483,7 @@ anxios({
 
 示例：[/songlist/list](http://api.qq.jsososo.com/songlist/list)
 
-#### 4、歌曲id、mid的哈希表
+#### 4、歌曲 id、mid 的哈希表
 
 !> 这个接口强制使用浏览器传来的用户 Cookie 信息
 
@@ -546,7 +551,7 @@ anxios({
 
 参数：
 
-`id`: 歌单id 必填
+`id`: 歌单 id 必填
 
 `op`: 必填 1 收藏；2 取消收藏
 
@@ -582,6 +587,7 @@ anxios({
 示例：[/song/batch?songmids=001PLl3C4gPSCI,0039MnYb0qxYhV](http://api.qq.jsososo.com/song/batch?songmids=001PLl3C4gPSCI,0039MnYb0qxYhV)
 
 #### 相似歌曲
+
 接口：`/song/similar`
 
 参数：
@@ -593,6 +599,7 @@ anxios({
 示例：[/song/similar?id=5105986](http://api.qq.jsososo.com/song/similar?id=5105986)
 
 #### 相关歌单
+
 接口：`/song/playlist`
 
 参数：
@@ -603,14 +610,15 @@ anxios({
 
 示例：[/song/playlist?id=5105986](http://api.qq.jsososo.com/song/playlist?id=5105986)
 
-#### 相关MV
+#### 相关 MV
+
 接口：`/song/mv`
 
 参数：
 
 `id`: 歌曲 `songid` 必填
 
-返回相关mv列表
+返回相关 mv 列表
 
 示例：[/song/mv?id=5105986](http://api.qq.jsososo.com/song/mv?id=5105986)
 
@@ -622,7 +630,7 @@ anxios({
 
 `songmid`: 必填
 
-返回的接口中 `lyric` 和 `trans` 分别是歌词和翻译，转成了base64，这里node进行了解码。
+返回的接口中 `lyric` 和 `trans` 分别是歌词和翻译，转成了 base64，这里 node 进行了解码。
 
 示例：[/lyric?songmid=0039MnYb0qxYhV](http://api.qq.jsososo.com/lyric?songmid=0039MnYb0qxYhV)
 
@@ -644,7 +652,7 @@ anxios({
 
 参数：
 
-`id`: 分类id，默认为 3317 // 3317: 官方歌单，59：经典，71：情歌，3056：网络歌曲，64：KTV热歌
+`id`: 分类 id，默认为 3317 // 3317: 官方歌单，59：经典，71：情歌，3056：网络歌曲，64：KTV 热歌
 
 `pageNo`: 页码，默认为 1
 
@@ -658,7 +666,7 @@ anxios({
 
 这个接口无需参数，强制使用传进来的 Cookie，返回日推歌单信息
 
-#### 4、轮播图Banner
+#### 4、轮播图 Banner
 
 接口：`/recommend/banner`
 
@@ -676,7 +684,7 @@ anxios({
 
 `type`: 地区分类，默认为 0 // 0: 最新 1：内地，2：港台，3：欧美，4：韩国，5：日本
 
-ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新专和mv接口做兼容，所以做了改动
+ps: 官方的接口其实不是这几个 type，但是为了考虑与下面的新专和 mv 接口做兼容，所以做了改动
 
 示例：[/new/songs](http://api.qq.jsososo.com/new/songs)
 
@@ -748,7 +756,7 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 示例：[/singer/album?singermid=0025NhlN2yWrP4](http://api.qq.jsososo.com/singer/album?singermid=0025NhlN2yWrP4)
 
-#### 4、获取mv
+#### 4、获取 mv
 
 接口：`/singer/mv`
 
@@ -770,7 +778,7 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 `singermid`: 必填
 
-官方接口是有返回数量参数的，但是最多只返回10个，所以这里就写死返回 10 个
+官方接口是有返回数量参数的，但是最多只返回 10 个，所以这里就写死返回 10 个
 
 示例：[/singer/sim?singermid=0025NhlN2yWrP4](http://api.qq.jsososo.com/singer/sim?singermid=0025NhlN2yWrP4)
 
@@ -832,17 +840,17 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 参数：
 
-`id`: singid, albumid, tid, topid, vid  必填
+`id`: singid, albumid, tid, topid, vid 必填
 
 `pageNo`: 默认 1
 
 `pageSize`: 默认 20
 
-`type`: 默认 0  // 0：获取最新评论，1：获取热评
+`type`: 默认 0 // 0：获取最新评论，1：获取热评
 
 `biztype`: 获取评论类型 1: 歌曲 2: 专辑 3: 歌单 4: 排行榜 5: mv
 
-当 `pageNo` 为 1 且 `type` 为 0 时，会返回15条热评 `hot_comment`
+当 `pageNo` 为 1 且 `type` 为 0 时，会返回 15 条热评 `hot_comment`
 
 返回结果说明：`ispraise` 表示这条评论是否被赞过，1: 是，0: 否；`enable_delete` 表示这条评论是否能被删除，1: 是，0: 否
 
@@ -860,11 +868,11 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 参数：
 
-`id`: singid, albumid, tid, topid, vid  必填
+`id`: singid, albumid, tid, topid, vid 必填
 
 `biztype`: 发送评论类型 1: 歌曲 2: 专辑 3: 歌单 4: 排行榜 5: mv
 
-`content`: 评论内容，必填，不超过300字
+`content`: 评论内容，必填，不超过 300 字
 
 #### 3、删除评论
 
@@ -874,7 +882,7 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 参数：
 
-`id`: commentid  必填
+`id`: commentid 必填
 
 只要登陆情况下，一般这个接口返回的都是操作成功，不管 `id` 是否存真实在（是鹅厂这样返回的！）
 
@@ -886,7 +894,7 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 参数：
 
-`id`: commentid  必填
+`id`: commentid 必填
 
 `type`: 1：点赞，2：取消赞，默认 1
 
@@ -906,7 +914,7 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 参数：
 
-`id`: 电台id，从上面的分类接口中获取
+`id`: 电台 id，从上面的分类接口中获取
 
 获取电台中歌曲，其中个性电台需要登陆 cookie
 
@@ -934,7 +942,7 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 `id`: 视频的 vid , 必填，多个用,分割
 
-返回的链接都是可以直接播放的完整mv视频
+返回的链接都是可以直接播放的完整 mv 视频
 
 示例：[/mv/url?id=t0032kwa29w](http://api.qq.jsososo.com/mv/url?id=t0032kwa29w)
 
@@ -984,7 +992,7 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 
 `id`: 默认 4，从上面的列表中取值
 
-`pageSize`: 默认 100 // 部分接口不支持这个字段，所以这里默认选择100
+`pageSize`: 默认 100 // 部分接口不支持这个字段，所以这里默认选择 100
 
 `period`: 榜单的时间，从上面的列表中取值，非必填
 
@@ -1005,7 +1013,6 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 传入的 `time`、`period`并非必定与传回参数相同，比如，当榜单最新时间为 `2019_49`, 而传入 `period=2019_50`时，会返回 `2019_49`的榜单，
 虽然这里不传或传入错误的 `period` 也会返回正确的数值，但是实际是通过第一次请求返回的结果来验证 `period` 是否正确，如果不正确会再进行第二次请求，
 因此会造成返回的比较慢，尽量都传入上一个接口中返回的 `period`
-
 
 ### 关注、粉丝
 
