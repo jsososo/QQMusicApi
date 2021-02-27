@@ -173,7 +173,7 @@ const user = {
       data: {
         list: result.data.disslist,
         creator: {
-          hostuin: result.data.hostuin,
+          hostuin: id, // 这里不采用 result.data.hostuin, 因为微信登录的超长id超出了js安全数字范围
           encrypt_uin: result.data.encrypt_uin,
           hostname: result.data.hostname,
         }
