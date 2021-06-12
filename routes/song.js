@@ -191,7 +191,8 @@ const song = {
               "uin": uin,
               "format": "json",
               "ct": 19,
-              "cv": 0
+              "cv": 0,
+              "authst": global.userCookie.qqmusic_key,
             }
           })
         }
