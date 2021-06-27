@@ -122,8 +122,8 @@ module.exports = {
     const $ = cheerio.load(page);
     const result = [];
     $('.focus__box .focus__pic').each((a, b) => {
-      const domA = cheerio(b).find('a');
-      const domImg = cheerio(b).find('img');
+      const domA = cheerio.load(b)('a');
+      const domImg = cheerio.load(b)('img');
       const [type, id] = [domA.attr('data-type'), domA.attr('data-rid')];
       const obj = {
         type,

@@ -23,7 +23,7 @@ const album = {
       const otherInfo = {};
 
       $('.data_info__item').each((i, v) => {
-        const str = cheerio(v).text();
+        const str = cheerio.load(v).text();
         if (str.indexOf('唱片公司') >= 0) {
           otherInfo.company = str.replace('唱片公司：', '');
         } else if (str.indexOf('发行时间') >= 0) {
