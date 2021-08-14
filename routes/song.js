@@ -1,8 +1,7 @@
-const request = require('../util/request');
 const search = require('./search');
 
 const song = {
-  '/': async (req, res, next) => {
+  '/': async ({req, res, request}) => {
     const url = "http://u.y.qq.com/cgi-bin/musicu.fcg";
     const {songmid, raw} = req.query;
 
@@ -37,7 +36,7 @@ const song = {
     return result.songinfo.data;
   },
 
-  '/batch': async (req, res) => {
+  '/batch': async ({req, res}) => {
     const {songmids} = req.query;
     if (!songmids) {
       return res.send({
@@ -70,7 +69,7 @@ const song = {
     })
   },
 
-  '/finds': async (req, res) => {
+  '/finds': async ({req, res}) => {
     const {data} = req.body;
     const keys = Object.keys(data);
 
@@ -102,10 +101,9 @@ const song = {
     }
   },
 
-  '/url': async (req, res) => {
+  '/url': async ({req, res, request, cache, globalCookie}) => {
     const obj = {...req.query, ...req.body};
-    let uin = global.userCookie.uin;
-    const {cache} = global;
+    let {uin, qqmusic_key} = globalCookie.userCookie();
     if (Number(obj.ownCookie)) {
       uin = req.cookies.uin || uin;
     }
@@ -192,12 +190,12 @@ const song = {
               "format": "json",
               "ct": 19,
               "cv": 0,
-              "authst": global.userCookie.qqmusic_key,
+              "authst": qqmusic_key,
             }
           })
         }
       });
-      if (!result.req_0.data) {
+      if (res && !result.req_0.data) {
         return res.send({
           result: 400,
           errMsg: '获取链接出错，建议检查是否携带 cookie ',
@@ -229,16 +227,15 @@ const song = {
     cache.set(cacheKey, cacheData);
   },
 
-  '/urls': async (req, res) => {
+  '/urls': async ({req, res, request, globalCookie, cache}) => {
     const obj = {...req.query, ...req.body};
-    let uin = global.userCookie.uin;
-    const {cache} = global;
+    let uin = globalCookie.userCookie().uin;
 
     if (Number(obj.ownCookie)) {
       uin = req.cookies.uin || uin;
     }
 
-    const {id} = obj;
+    const {id = ''} = obj;
     const idArr = id.split(',');
     let count = 0;
     const idStr = idArr.map((id) => `"${id}"`).join(',');
@@ -265,7 +262,7 @@ const song = {
     }
 
     if (!result || !result.req_0) {
-      return res.send({ result: 200, errMsg: '获取链接失败，建议检查是否登录'})
+      return res.send({result: 200, errMsg: '获取链接失败，建议检查是否登录'})
     }
 
     const domain = result.req_0.data.sip.find(i => !i.startsWith('http://ws')) || result.req_0.data.sip[0];
@@ -288,7 +285,7 @@ const song = {
   },
 
   // 相似歌曲
-  '/similar': async (req, res) => {
+  '/similar': async ({req, res, request}) => {
     const {id, raw} = req.query;
     if (!id) {
       return res.send({
@@ -334,7 +331,7 @@ const song = {
   },
 
   // 相关歌单
-  '/playlist': async (req, res) => {
+  '/playlist': async ({req, res, request}) => {
     const {id, raw} = req.query;
     if (!id) {
       return res.send({
@@ -383,7 +380,7 @@ const song = {
   },
 
   // 相关 mv
-  '/mv': async (req, res) => {
+  '/mv': async ({req, res, request}) => {
     const {id, raw} = req.query;
     if (!id) {
       return res.send({

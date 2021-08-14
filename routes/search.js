@@ -1,9 +1,6 @@
-const request = require('../util/request');
-
 module.exports = {
   // 搜索
-  '/': async (req, res) => {
-    const {cache} = global;
+  '/': async ({req, res, request, cache}) => {
     let {
       pageNo = 1,
       pageSize = 20,
@@ -27,7 +24,7 @@ module.exports = {
       return cacheData;
     }
     const url = {
-      0: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
+      // 0: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
       2: `https://c.y.qq.com/soso/fcgi-bin/client_music_search_songlist?remoteplace=txt.yqq.playlist&page_no=${pageNo - 1}&num_per_page=${pageSize}&query=${key}`,
       // 3: 'http://c.y.qq.com/soso/fcgi-bin/client_search_user',
     }[t] || 'http://c.y.qq.com/soso/fcgi-bin/client_search_cp';
@@ -125,7 +122,7 @@ module.exports = {
   },
 
   // 热搜词
-  '/hot': async (req, res) => {
+  '/hot': async ({req, res, request}) => {
     const {raw} = req.query;
     const result = await request({
       url: 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg',
@@ -140,7 +137,7 @@ module.exports = {
   },
 
   // 快速搜索
-  '/quick': async (req, res) => {
+  '/quick': async ({req, res, request}) => {
     const {raw, key} = req.query;
     if (!key) {
       return res.send({

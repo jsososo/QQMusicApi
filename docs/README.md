@@ -11,6 +11,33 @@
 
 灵感来源：[Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
+## NPM 使用
+
+```shell script
+yarn add qq-music-api
+```
+
+```javascript
+const qqMusic = require('qq-music-api');
+
+// 部分接口依赖 cookie, 这里穿参可以使用字符串或对象
+qqMusic.setCookie('xxx=xxx; xxx=xxx;');
+// or
+qqMusic.setCookie({ a: 'xxx', b: 'xxx' });
+
+qqMusic.api('search', { key: '周杰伦' })
+    .then(res => console.log(res))
+    .catch(err => console.log('接口调用出错'))
+
+qqMusic.api('search', { key: '周杰伦' })
+    .then((res) => console.log('搜索周杰伦：', res))
+    .catch(err => console.log('接口调用出错'))
+
+qqMusic.api('search/hot')
+    .then((res) => console.log('热搜词：', res))
+    .catch(err => console.log('接口调用出错'))
+```
+
 ## Start
 
 ```shell
@@ -60,6 +87,8 @@ $ npm start
 
 
 ## 更新记录
+21-08-15 🦆 支持 npm 使用 & bug fix
+
 21-06-27 🌰 修改部分接口cheerio调用
 
 21-02-10 🦛 修复部分歌手页面报错 & 增加歌手名字获取
@@ -224,7 +253,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 示例：[/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s](http://api.qq.jsososo.com/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s)
 
-```javascript
+```json5
 // 晴天和七里香
 {
   "data": {
@@ -281,7 +310,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 返回示例：`k` 为热搜词，`n` 为搜索量
 
-```javascript
+```json5
 {
   "result": 100,
   "data": [

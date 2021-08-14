@@ -1,7 +1,5 @@
-const request = require('../util/request');
-
 module.exports = {
-  '/': async (req, res, next) => {
+  '/': async ({res}) => {
     res.send('hello world');
   },
 }

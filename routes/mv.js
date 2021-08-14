@@ -1,8 +1,6 @@
-const request = require('../util/request');
-
 module.exports = {
   // 获取 mv 信息
-  '/': async (req, res) => {
+  '/': async ({req, res, request}) => {
     const {id, raw} = req.query;
 
     if (!id) {
@@ -55,7 +53,7 @@ module.exports = {
   },
 
   // 获取 mv 链接
-  '/url': async (req, res) => {
+  '/url': async ({req, res, request}) => {
 
     const {id, raw} = req.query;
 
@@ -103,7 +101,7 @@ module.exports = {
   },
 
   // 获取 mv 分类
-  '/category': async (req, res) => {
+  '/category': async ({req, res, request}) => {
     const {raw} = req.query;
     const result = await request({
       url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
@@ -126,7 +124,7 @@ module.exports = {
   },
 
   // 根据分类获取 mv 列表
-  '/list': async (req, res) => {
+  '/list': async ({req, res, request}) => {
     const {raw, pageNo = 1, pageSize = 20, version = 7, area = 15} = req.query;
     const result = await request({
       url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',

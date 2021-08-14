@@ -1,11 +1,10 @@
-const request = require('../util/request');
 const StringHelper = require('../util/StringHelper');
 
 module.exports = {
-  '/': async (req, res, next) => {
-    const { id = '0039MnYb0qxYhV' } = req.query;
+  '/': async ({req, res}) => {
+    const {id = '0039MnYb0qxYhV'} = req.query;
 
-    let [ vkey, guid, url, sip ] = ['', '', '', null];
+    let [vkey, guid, url, sip] = ['', '', '', null];
     let r = null;
 
     const queryVkey = async () => {

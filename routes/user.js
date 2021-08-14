@@ -1,18 +1,17 @@
-const request = require('../util/request');
 const jsonFile = require('jsonfile');
 
 const user = {
-  '/cookie': (req, res) => {
+  '/cookie': ({req, res, globalCookie}) => {
     res.send({
       result: 100,
       data: {
         cookie: req.cookies,
-        userCookie: global.userCookie,
+        userCookie: globalCookie.userCookie(),
       }
     });
   },
 
-  '/getCookie': (req, res) => {
+  '/getCookie': ({req, res, allCookies}) => {
     const {id} = req.query;
     if (!id) {
       return res.send({
@@ -21,7 +20,7 @@ const user = {
       });
     }
 
-    const cookieObj = global.allCookies[id] || [];
+    const cookieObj = allCookies[id] || [];
     Object.keys(cookieObj).forEach((k) => {
       // 有些过大的cookie 对登录校验无用，但是会导致报错
       if (cookieObj[k].length < 255) {
@@ -34,8 +33,9 @@ const user = {
     })
   },
 
-  '/setCookie': (req, res) => {
+  '/setCookie': ({req, res, globalCookie}) => {
     const {data} = req.body;
+    const allCookies = globalCookie.allCookies();
     const userCookie = {};
     data.split('; ').forEach((c) => {
       const arr = c.split('=');
@@ -46,13 +46,13 @@ const user = {
       userCookie.uin = userCookie.wxuin;
     }
     userCookie.uin = (userCookie.uin || '').replace(/\D/g, '');
-    global.allCookies[userCookie.uin] = userCookie;
-    jsonFile.writeFile('data/allCookies.json', global.allCookies);
+    allCookies[userCookie.uin] = userCookie;
+    jsonFile.writeFile('data/allCookies.json', allCookies);
 
     // 这里写死我的企鹅号，作为存在服务器上的cookie
     if (String(userCookie.uin) === String(global.QQ)) {
-      global.userCookie = userCookie;
-      jsonFile.writeFile('data/cookie.json', global.userCookie);
+      globalCookie.updateUserCookie(userCookie);
+      jsonFile.writeFile('data/cookie.json', userCookie);
     }
     res.set('Access-Control-Allow-Origin', 'https://y.qq.com');
     res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
@@ -65,7 +65,7 @@ const user = {
   },
 
   // 获取用户歌单
-  '/detail': async (req, res) => {
+  '/detail': async ({req, res, request}) => {
     const {id} = req.query;
 
     if (!id) {
@@ -98,7 +98,7 @@ const user = {
   },
 
   // 获取用户创建的歌单
-  '/songlist': async (req, res) => {
+  '/songlist': async ({req, res, request}) => {
     const {id, raw} = req.query;
     if (!id) {
       return res.send({
@@ -182,7 +182,7 @@ const user = {
   },
 
   // 获取用户收藏的歌单
-  '/collect/songlist': async (req, res) => {
+  '/collect/songlist': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({
@@ -217,7 +217,7 @@ const user = {
   },
 
   // 获取用户收藏的专辑
-  '/collect/album': async (req, res) => {
+  '/collect/album': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({
@@ -252,7 +252,7 @@ const user = {
   },
 
   // 获取关注的歌手
-  '/follow/singers': async (req, res) => {
+  '/follow/singers': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({
@@ -294,7 +294,7 @@ const user = {
   },
 
   // 关注歌手操作
-  '/follow': async (req, res) => {
+  '/follow': async ({req, res, request}) => {
     const {singermid, raw, operation = 1, type = 1} = req.query;
 
     const urlMap = {
@@ -346,7 +346,7 @@ const user = {
   },
 
   // 获取关注的用户
-  '/follow/users': async (req, res) => {
+  '/follow/users': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({
@@ -388,7 +388,7 @@ const user = {
   },
 
   // 获取用户粉丝
-  '/fans': async (req, res) => {
+  '/fans': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({

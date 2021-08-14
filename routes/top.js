@@ -1,8 +1,7 @@
-const request = require('../util/request');
 const moment = require('moment');
 
 module.exports = {
-  '/': async (req, res, next) => {
+  '/': async ({req, res, request}) => {
     const {id = 4, pageNo = 1, pageSize = 100, period, time = moment().format('YYYY-MM-DD'), raw} = req.query;
 
     let timeType = '';
@@ -79,7 +78,7 @@ module.exports = {
   },
 
   // 获取各种排行榜
-  '/category': async (req, res) => {
+  '/category': async ({req, res, request}) => {
     const {raw, showDetail = 0, ownCookie} = req.query;
     let uin = '123456';
     if (Number(ownCookie)) {

@@ -11,7 +11,7 @@ COPY . .
 VOLUME ["./data","./bin"]
 
 RUN npm config set registry https://registry.npm.taobao.org \
-    && npm install cross-env -g
+    && npm install cross-env -g && npm install
 
 EXPOSE 80
 
