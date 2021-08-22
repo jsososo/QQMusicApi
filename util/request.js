@@ -50,6 +50,7 @@ module.exports = (req, res, {globalCookie} = {}) => {
 
       const response = await axios(obj);
 
+      console.log('aaaaa', response);
       if (opts.dataType === 'xml') {
         return handleXml(response.data.replace(/(<!--)|(-->)/g, ''));
       }

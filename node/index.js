@@ -4,6 +4,12 @@ const Request = require('../util/request');
 
 const cache = new Cache();
 
+const blackFunc = new Set([
+  'user/cookie',
+  'user/getCookie',
+  'user/setCookie',
+])
+
 class QQMusic {
   get cookie() {
     return this._cookie || {};
@@ -41,13 +47,16 @@ class QQMusic {
       const baseFunc = truePath.shift();
       const func = truePath.join('/') || '';
       const req = {
-        query,
+        query: {...query, ownCookie: 1},
         cookies: this.cookie,
       };
       const res = {
         send: resolve,
+        redirect: (url) => url,
+        cookie: (k, val) => this.setCookie({...this.cookie, [k]: val}),
       };
-      if (!routes[baseFunc] || !routes[baseFunc][`/${func}`]) {
+
+      if (!routes[baseFunc] || !routes[baseFunc][`/${func}`] || blackFunc.has(`${baseFunc}/${func}`)) {
         return reject({message: 'wrong path'});
       }
 

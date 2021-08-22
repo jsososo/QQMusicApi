@@ -1,8 +1,9 @@
 {
   "name": "qq-music-api",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "start": "node ./bin/www",
+    "start:doc": "docsify serve docs",
     "prepack": "node ./node/build.js",
     "build:docker": "docker build -t qqmusic:1.0 .",
     "rm:docker": "docker container rm qqmusic -f",
@@ -20,21 +21,22 @@
     "node": ">=12"
   },
   "dependencies": {
+    "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.3",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "fs": "^0.0.1-security",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
+    "js-base64": "^2.5.1",
     "jsonfile": "^5.0.0",
     "moment": "^2.24.0",
     "morgan": "~1.9.1",
     "useragent": "^2.3.0",
-    "axios": "^0.21.1",
-    "cheerio": "^1.0.0-rc.3",
-    "js-base64": "^2.5.1",
     "xml2js": "^0.4.22"
   },
   "devDependencies": {
+    "docsify": "^4"
   }
 }

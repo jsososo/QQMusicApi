@@ -13,5 +13,6 @@ module.exports = {
   songlist: require('../routes/songlist'),
   test: require('../routes/test'),
   top: require('../routes/top'),
+  user: require('../routes/user'),
   vkey: require('../routes/vkey'),
 }

@@ -5,13 +5,41 @@
 [![GitHub Pages Star](https://img.shields.io/github/stars/jsososo/QQMusicApi.svg)](https://github.com/jsososo/QQMusicApi)
 
 
-## 安装
+接口参考：
+
+[接口文档 Github](https://jsososo.github.io/QQMusicApi/#/)
+
+[接口文档 Vercel](https://qq-api-soso.vercel.app/)
+
+
+## 快速上手
+
+### Node 服务
+
+```shell script
+git clone git@github.com:jsososo/QQMusicApi.git
+
+yarn
+
+yarn start
+```
+
+### Docker
+
+```shell script
+yarn build:docker
+
+yarn start:docker
+```
+
+
+### npm
 
 ```shell script
 yarn add qq-music-api
 ```
 
-## 接口调用
+#### 接口调用
 
 ```javascript
 const qqMusic = require('qq-music-api');
@@ -31,12 +59,13 @@ qqMusic.api('search', { key: '周杰伦' })
 
 qqMusic.api('search/hot')
     .then((res) => console.log('热搜词：', res))
-    .catch(err => console.log('接口调用出错'))
+    .catch(err => console.log('接口调用出错'))//
+
+// 刷新登陆
+qqMusic.api('user/refresh')
 ```
 
-更多接口参考：[接口文档](https://jsososo.github.io/QQMusicApi/#/)
-
-## 获取当前cookie
+#### 获取当前cookie
 
 ```javascript
 const qqMusic = require('qq-music-api');
@@ -44,7 +73,7 @@ const qqMusic = require('qq-music-api');
 console.log(qqMusic.cookie);
 ```
 
-## 获取当前 cookie 用户
+#### 获取当前 cookie 用户
 ```javascript
 const qqMusic = require('qq-music-api');
 
