@@ -1,9 +1,8 @@
-const request = require('../util/request');
 const StringHelper = require('../util/StringHelper');
 
 module.exports = {
   // 根据 id 获取歌单详情
-  '/': async (req, res, next) => {
+  '/': async ({req, res, request}) => {
     const {id, raw} = req.query;
     if (!id) {
       return res.send({
@@ -38,7 +37,7 @@ module.exports = {
   },
 
   // 获取歌单分类
-  '/category': async (req, res) => {
+  '/category': async ({req, res, request}) => {
     const {raw} = req.query;
 
     const result = await request({
@@ -65,7 +64,7 @@ module.exports = {
   },
 
   // 根据歌单分类筛选歌单
-  '/list': async (req, res) => {
+  '/list': async ({req, res, request}) => {
     const {raw, num = 20, pageSize = num, pageNo = 1, sort = 5, category = 10000000} = req.query;
 
     const result = await request({
@@ -102,7 +101,7 @@ module.exports = {
   },
 
   // 获取歌单中 mid 和 id 强制使用传过来的cookie
-  '/map': async (req, res) => {
+  '/map': async ({req, res, request}) => {
     const {dirid = 201, raw} = req.query;
     req.query.ownCookie = 1;
     const result = await request({
@@ -136,7 +135,7 @@ module.exports = {
   },
 
   // 把歌曲添加到歌单，强制使用传过来的cookie
-  '/add': async (req, res) => {
+  '/add': async ({req, res, request}) => {
     const {mid, dirid} = req.query;
     if (!mid || !dirid) {
       return res.send({
@@ -183,7 +182,7 @@ module.exports = {
   },
 
   // 从歌单中删除歌曲，强制使用传过来的cookie
-  '/remove': async (req, res) => {
+  '/remove': async ({req, res, request}) => {
     const {id, dirid} = req.query;
     if (!id || !dirid) {
       return res.send({
@@ -235,7 +234,7 @@ module.exports = {
   },
 
   // 新建歌单 强制使用传过来的cookie
-  '/create': async (req, res) => {
+  '/create': async ({req, res, request}) => {
     req.query.ownCookie = 1;
     const {name} = req.query;
     if (!name) {
@@ -296,7 +295,7 @@ module.exports = {
   },
 
   // 删除歌单 强制使用传过来的Cookie
-  '/delete': async (req, res) => {
+  '/delete': async ({req, res, request}) => {
     req.query.ownCookie = 1;
     const {dirid} = req.query;
     if (!dirid) {
@@ -353,7 +352,7 @@ module.exports = {
   },
 
   // 收藏歌单 强制使用传过来的Cookie
-  '/collect': async (req, res) => {
+  '/collect': async ({req, res, request}) => {
     req.query.ownCookie = 1;
     // op: 1 收藏，2 取消收藏
     const {id, op} = req.query;
@@ -405,38 +404,38 @@ module.exports = {
   },
 
   // 这是一个把网易云歌单进行简单搬运到qq音乐的功能，运行的比较慢，看到的人感兴趣的就自己研究一下吧
-  '/move': async (req, res) => {
-    const {id} = req.query;
-    const url = `http://music.jsososo.com/api/playlist/detail?id=${id}`;
-
-    const result = await request(url);
-    const list = [];
-
-    for (let index = 0; index < result.playlist.tracks.length; index++) {
-      const item = result.playlist.tracks[index];
-      const song = {
-        name: item.name,
-        artist: item.ar.map(a => a.name).join('/'),
-        album: item.al.name,
-      };
-      const key = `${song.name} ${song.artist} ${song.album}`;
-      try {
-        const obj = await request(`http://music.jsososo.com/apiQ/song/find?key=${key}`);
-        if (obj.data && obj.data.songmid) {
-          list.push(obj.data.songmid);
-          await request({
-            url: `http://127.0.0.1:${global.PORT}/songlist/add`,
-            data: {
-              mid: obj.data.songmid,
-              dirid: 201,
-            }
-          });
-        }
-      } catch (e) {
-
-      }
-    }
-
-    res.send(list);
-  },
+  // '/move': async ({req, res, request}) => {
+  //   const {id} = req.query;
+  //   const url = `http://music.jsososo.com/api/playlist/detail?id=${id}`;
+  //
+  //   const result = await request(url);
+  //   const list = [];
+  //
+  //   for (let index = 0; index < result.playlist.tracks.length; index++) {
+  //     const item = result.playlist.tracks[index];
+  //     const song = {
+  //       name: item.name,
+  //       artist: item.ar.map(a => a.name).join('/'),
+  //       album: item.al.name,
+  //     };
+  //     const key = `${song.name} ${song.artist} ${song.album}`;
+  //     try {
+  //       const obj = await request(`http://music.jsososo.com/apiQ/song/find?key=${key}`);
+  //       if (obj.data && obj.data.songmid) {
+  //         list.push(obj.data.songmid);
+  //         await request({
+  //           url: `http://127.0.0.1:${global.PORT}/songlist/add`,
+  //           data: {
+  //             mid: obj.data.songmid,
+  //             dirid: 201,
+  //           }
+  //         });
+  //       }
+  //     } catch (e) {
+  //
+  //     }
+  //   }
+  //
+  //   res.send(list);
+  // },
 }

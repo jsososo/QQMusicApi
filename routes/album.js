@@ -1,9 +1,8 @@
-const request = require('../util/request');
 const cheerio = require('cheerio');
 
 const album = {
   // 专辑信息
-  '/': async (req, res) => {
+  '/': async ({req, res, request}) => {
     const {albummid} = req.query;
 
     if (!albummid) {
@@ -14,7 +13,7 @@ const album = {
     }
 
     try {
-      const info = await album["/songs"]({ query: { albummid }});
+      const info = await album["/songs"]({req, request});
       const pageInfo = await request(`https://y.qq.com/n/yqq/album/${albummid}.html`, {dataType: 'raw'});
       const $ = cheerio.load(pageInfo);
 
@@ -23,7 +22,7 @@ const album = {
       const otherInfo = {};
 
       $('.data_info__item').each((i, v) => {
-        const str = cheerio(v).text();
+        const str = cheerio.load(v).text();
         if (str.indexOf('唱片公司') >= 0) {
           otherInfo.company = str.replace('唱片公司：', '');
         } else if (str.indexOf('发行时间') >= 0) {
@@ -60,7 +59,7 @@ const album = {
   },
 
   // 专辑的歌曲信息
-  '/songs': async (req, res, next) => {
+  '/songs': async ({req, res, request}) => {
     const {raw, albummid} = req.query;
 
     if (!albummid) {

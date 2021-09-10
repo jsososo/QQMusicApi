@@ -1,9 +1,8 @@
-const request = require('../util/request');
 const cheerio = require('cheerio');
 const songlist = require('./songlist');
 
 module.exports = {
-  '/playlist': async (req, res, next) => {
+  '/playlist': async ({req, res, request}) => {
     const {
       raw,
       pageNo = 1,
@@ -53,7 +52,7 @@ module.exports = {
 
   },
 
-  '/playlist/u': async (req, res, next) => {
+  '/playlist/u': async ({req, res, request}) => {
     const {raw} = req.query;
 
     const data = {
@@ -92,7 +91,7 @@ module.exports = {
   },
 
   // 日推
-  '/daily': async (req, res) => {
+  '/daily': async ({req, res, request}) => {
     req.query.ownCookie = 1;
     const page = await request('https://c.y.qq.com/node/musicmac/v6/index.html', {
       dataType: 'raw',
@@ -114,7 +113,7 @@ module.exports = {
   },
 
   // banner 日推
-  '/banner': async (req, res) => {
+  '/banner': async ({req, res, request}) => {
     req.query.ownCookie = 1;
     const page = await request('https://c.y.qq.com/node/musicmac/v6/index.html', {
       dataType: 'raw',
@@ -122,8 +121,8 @@ module.exports = {
     const $ = cheerio.load(page);
     const result = [];
     $('.focus__box .focus__pic').each((a, b) => {
-      const domA = cheerio(b).find('a');
-      const domImg = cheerio(b).find('img');
+      const domA = cheerio.load(b)('a');
+      const domImg = cheerio.load(b)('img');
       const [type, id] = [domA.attr('data-type'), domA.attr('data-rid')];
       const obj = {
         type,

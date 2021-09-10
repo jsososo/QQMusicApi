@@ -1,8 +1,7 @@
-const request = require('../util/request');
 const Base64 = require('js-base64');
 
 module.exports = {
-  '/': async (req, res, next) => {
+  '/': async ({req, res, request}) => {
     const {songmid, raw} = req.query;
 
     if (!songmid) {

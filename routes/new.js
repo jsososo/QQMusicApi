@@ -1,7 +1,5 @@
-const request = require('../util/request');
-
 module.exports = {
-  '/songs': async (req, res, next) => {
+  '/songs': async ({req, res, request}) => {
     const {type = 5, raw} = req.query;
 
     const newType = {
@@ -54,7 +52,7 @@ module.exports = {
 
   },
 
-  '/album': async (req, res) => {
+  '/album': async ({req, res, request}) => {
     const {type = 1, num = 10, raw} = req.query;
 
     const typeName = {
@@ -109,7 +107,7 @@ module.exports = {
     }
   },
 
-  '/mv': async (req, res) => {
+  '/mv': async ({req, res, request}) => {
     const {raw, type = 0} = req.query;
 
     const typeName = {

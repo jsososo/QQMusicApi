@@ -1,8 +1,6 @@
-const request = require('../util/request');
-
 module.exports = {
   // 获取 mv 信息
-  '/': async (req, res) => {
+  '/': async ({req, res, request}) => {
     const {id, raw} = req.query;
 
     if (!id) {
@@ -55,7 +53,7 @@ module.exports = {
   },
 
   // 获取 mv 链接
-  '/url': async (req, res) => {
+  '/url': async ({req, res, request}) => {
 
     const {id, raw} = req.query;
 
@@ -103,7 +101,7 @@ module.exports = {
   },
 
   // 获取 mv 分类
-  '/category': async (req, res) => {
+  '/category': async ({req, res, request}) => {
     const {raw} = req.query;
     const result = await request({
       url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
@@ -126,7 +124,7 @@ module.exports = {
   },
 
   // 根据分类获取 mv 列表
-  '/list': async (req, res) => {
+  '/list': async ({req, res, request}) => {
     const {raw, pageNo = 1, pageSize = 20, version = 7, area = 15} = req.query;
     const result = await request({
       url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
@@ -167,4 +165,52 @@ module.exports = {
       })
     }
   },
+
+  // 点赞
+  '/like': async ({req, res, request}) => {
+    const {id, type = 1, raw} = req.query;
+
+    if (!id) {
+      return res.send({
+        result: 500,
+        errMsg: 'id ?'
+      })
+    }
+    const result = await request({
+      url: 'https://c.y.qq.com/mv/fcgi-bin/fcg_add_del_myfav_mv.fcg',
+      data: {
+        uin: req.cookies.uin,
+        g_tk: 1157392233,
+        format: 'json',
+        inCharset: 'utf-8',
+        outCharset: 'utf-8',
+        cmdtype: Number(!Number(type)),
+        reqtype: 1,
+        mvidlist: id,
+        mvidtype: 0,
+        cv: 4747474,
+        ct: 24,
+        notice: 0,
+        platform: 'yqq.json',
+        needNewCode: 1,
+        g_tk_new_20200303: 1859542818,
+        cid: 205361448,
+      }
+    })
+
+    if (Number(raw)) {
+      return res.send(result);
+    }
+    if (result.code) {
+      return res.send({
+        result: 200,
+        errMsg: result.msg,
+      })
+    }
+
+    return res.send({
+      result: 100,
+      data: '操作成功！',
+    });
+  }
 }

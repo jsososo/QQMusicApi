@@ -1,5 +1,3 @@
-const request = require('../util/request');
-
 const handleResult = (res, result, errMsg, successMsg) => {
   if (result.code === 1000) {
     return res.send({
@@ -20,7 +18,7 @@ const handleResult = (res, result, errMsg, successMsg) => {
 }
 
 module.exports = {
-  '/': async (req, res) => {
+  '/': async ({req, res, request}) => {
     const {id, pageNo = 1, pageSize = 20, type = 0, raw, biztype = 1} = req.query;
     if (!id) {
       return res.send({
@@ -62,7 +60,7 @@ module.exports = {
   },
 
   // 发送评论
-  '/send': async (req, res) => {
+  '/send': async ({req, res, request}) => {
     const {id, biztype, content} = req.query;
     if (!id || !biztype || !content) {
       return res.send({
@@ -104,7 +102,7 @@ module.exports = {
   },
 
   // 删除评论
-  '/del': async (req, res) => {
+  '/del': async ({req, res, request}) => {
     const {id} = req.query;
     if (!id) {
       return res.send({
@@ -130,7 +128,7 @@ module.exports = {
     handleResult(res, result, '反正是删除失败了', '删除成功');
   },
 
-  '/like': async (req, res) => {
+  '/like': async ({req, res, request}) => {
     const {id, type = 1} = req.query;
     req.query.ownCookie = 1;
     if (!id) {

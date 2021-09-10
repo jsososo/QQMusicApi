@@ -1,14 +1,12 @@
-const {feedback} = global;
-
 module.exports = {
-  '/': async (req, res) => {
+  '/': async ({req, res, feedback}) => {
     res.send({
       result: 100,
       data: feedback.get(req.query),
     })
   },
 
-  '/add': async (req, res) => {
+  '/add': async ({req, res, feedback}) => {
     feedback.add(req.query);
     res.send({
       result: 100,
@@ -16,7 +14,7 @@ module.exports = {
     })
   },
 
-  '/delete': async (req, res) => {
+  '/delete': async ({req, res, feedback}) => {
     feedback.delete(req.query.id);
     res.send({
       result: 100,

@@ -1,18 +1,63 @@
-const request = require('../util/request');
 const jsonFile = require('jsonfile');
+const getSign = require('../util/sign');
 
 const user = {
-  '/cookie': (req, res) => {
+  '/cookie': ({req, res, globalCookie}) => {
     res.send({
       result: 100,
-      data: {
-        cookie: req.cookies,
-        userCookie: global.userCookie,
-      }
+      data: req.cookies
     });
   },
 
-  '/getCookie': (req, res) => {
+  '/refresh': async ({req, res, request}) => {
+    const {uin, qm_keyst, qqmusic_key} = req.cookies
+    if (!uin || !(qm_keyst || qqmusic_key)) {
+      return res.send({
+        result: 301,
+        errMsg: '未登陆'
+      })
+    }
+    const data = {
+      req1: {
+        module: "QQConnectLogin.LoginServer",
+        method: "QQLogin",
+        param: {
+          expired_in: 7776000, //不用管
+          // onlyNeedAccessToken: 0, //不用管
+          // forceRefreshToken: 0, //不用管
+          // access_token: "6B0C62126368CA1ACE16C932C679747E", //access_token
+          // refresh_token: "25BACF1650EE2592D06BCC19EEAD7AD6", //refresh_token
+          musicid: uin, //uin或者web_uin 微信没试过
+          musickey: qm_keyst || qqmusic_key, //key
+        },
+      },
+    };
+    const sign = getSign(data);
+    let url = `https://u6.y.qq.com/cgi-bin/musics.fcg?sign=${sign}&format=json&inCharset=utf8&outCharset=utf-8&data=${encodeURIComponent(
+      JSON.stringify(data)
+    )}`;
+
+    const result = await request({url})
+
+    if (result.req1 && result.req1.data && result.req1.data.musickey) {
+      const musicKey = result.req1.data.musickey;
+      ['qm_keyst', 'qqmusic_key'].forEach((k) => {
+        res.cookie(k, musicKey, {expires: new Date(Date.now() + 86400000)})
+      })
+      return res.send({
+        result: 100,
+        data: {
+          musickey: result.req1.data.musickey,
+        }
+      });
+    }
+    return res.send({
+      result: 200,
+      errMsg: '刷新失败，建议重新设置cookie'
+    })
+  },
+
+  '/getCookie': ({req, res, globalCookie}) => {
     const {id} = req.query;
     if (!id) {
       return res.send({
@@ -21,7 +66,7 @@ const user = {
       });
     }
 
-    const cookieObj = global.allCookies[id] || [];
+    const cookieObj = globalCookie.allCookies()[id] || {};
     Object.keys(cookieObj).forEach((k) => {
       // 有些过大的cookie 对登录校验无用，但是会导致报错
       if (cookieObj[k].length < 255) {
@@ -34,8 +79,9 @@ const user = {
     })
   },
 
-  '/setCookie': (req, res) => {
+  '/setCookie': ({req, res, globalCookie}) => {
     const {data} = req.body;
+    const allCookies = globalCookie.allCookies();
     const userCookie = {};
     data.split('; ').forEach((c) => {
       const arr = c.split('=');
@@ -46,13 +92,13 @@ const user = {
       userCookie.uin = userCookie.wxuin;
     }
     userCookie.uin = (userCookie.uin || '').replace(/\D/g, '');
-    global.allCookies[userCookie.uin] = userCookie;
-    jsonFile.writeFile('data/allCookies.json', global.allCookies);
+    allCookies[userCookie.uin] = userCookie;
+    jsonFile.writeFile('data/allCookies.json', allCookies);
 
     // 这里写死我的企鹅号，作为存在服务器上的cookie
     if (String(userCookie.uin) === String(global.QQ)) {
-      global.userCookie = userCookie;
-      jsonFile.writeFile('data/cookie.json', global.userCookie);
+      globalCookie.updateUserCookie(userCookie);
+      jsonFile.writeFile('data/cookie.json', userCookie);
     }
     res.set('Access-Control-Allow-Origin', 'https://y.qq.com');
     res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
@@ -65,7 +111,7 @@ const user = {
   },
 
   // 获取用户歌单
-  '/detail': async (req, res) => {
+  '/detail': async ({req, res, request}) => {
     const {id} = req.query;
 
     if (!id) {
@@ -98,7 +144,7 @@ const user = {
   },
 
   // 获取用户创建的歌单
-  '/songlist': async (req, res) => {
+  '/songlist': async ({req, res, request}) => {
     const {id, raw} = req.query;
     if (!id) {
       return res.send({
@@ -152,7 +198,8 @@ const user = {
       favDiss.diss_cover = 'http://y.gtimg.cn/mediastyle/global/img/cover_like.png';
     } else {
       try {
-        const detail = await user["/detail"]({ query: { id }});
+        const detail = await user["/detail"]({req: {query: {id}}, request});
+        console.log(detail);
         const fav = detail.data.mymusic[0];
         favDiss = {
           "diss_name": "我喜欢",
@@ -182,7 +229,7 @@ const user = {
   },
 
   // 获取用户收藏的歌单
-  '/collect/songlist': async (req, res) => {
+  '/collect/songlist': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({
@@ -217,7 +264,7 @@ const user = {
   },
 
   // 获取用户收藏的专辑
-  '/collect/album': async (req, res) => {
+  '/collect/album': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({
@@ -252,7 +299,7 @@ const user = {
   },
 
   // 获取关注的歌手
-  '/follow/singers': async (req, res) => {
+  '/follow/singers': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({
@@ -294,7 +341,7 @@ const user = {
   },
 
   // 关注歌手操作
-  '/follow': async (req, res) => {
+  '/follow': async ({req, res, request}) => {
     const {singermid, raw, operation = 1, type = 1} = req.query;
 
     const urlMap = {
@@ -346,7 +393,7 @@ const user = {
   },
 
   // 获取关注的用户
-  '/follow/users': async (req, res) => {
+  '/follow/users': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({
@@ -388,7 +435,7 @@ const user = {
   },
 
   // 获取用户粉丝
-  '/fans': async (req, res) => {
+  '/fans': async ({req, res, request}) => {
     const {id = req.cookies.uin, pageNo = 1, pageSize = 20, raw} = req.query;
     if (!id) {
       return res.send({

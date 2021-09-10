@@ -9,26 +9,15 @@ const jsonFile = require('jsonfile');
 const Feedback = require('./util/feedback');
 const Cache = require('./util/cache');
 const config = require('./bin/config');
+const Request = require('./util/request');
+const GlobalCookie = require('./util/globalCookie');
 
 const app = express();
 const dataHandle = new DataStatistics();
-global.dataStatistics = dataHandle;
-global.feedback = new Feedback();
-global.cache = new Cache();
+const feedback = new Feedback();
+const cache = new Cache();
+const globalCookie = GlobalCookie();
 
-jsonFile.readFile('data/allCookies.json')
-  .then((res) => {
-    global.allCookies = res;
-  }, (err) => {
-    global.allCookies = {};
-  });
-
-jsonFile.readFile('data/cookie.json')
-  .then((res) => {
-    global.userCookie = res;
-  }, (err) => {
-    global.userCookie = {}
-  });
 
 // 每10分钟存一下数据
 config.useDataStatistics && setInterval(() => dataHandle.saveInfo(), 60000 * 10);
@@ -39,7 +28,7 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -54,8 +43,7 @@ fs.readdirSync(path.join(__dirname, 'routes')).forEach(file => {
   Object.keys(RouterMap).forEach((path) => {
     app.use(`/${filename}${path}`, (req, res, next) => {
       const router = express.Router();
-      global.response = res;
-      global.req = req;
+      const request = Request(req, res, {globalCookie})
       req.query = {
         ...req.query,
         ...req.body,
@@ -70,14 +58,15 @@ fs.readdirSync(path.join(__dirname, 'routes')).forEach(file => {
       req.cookies.uin = uin.replace(/\D/g, '');
       const func = RouterMap[path];
 
-      router.post('/', (req, res, next) => func(req, res, next));
-      router.get('/', (req, res, next) => func(req, res, next));
+      const args = {request, dataStatistics: dataHandle, feedback, cache, globalCookie};
+      router.post('/', (req, res) => func({req, res, ...args}));
+      router.get('/', (req, res) => func({req, res, ...args}));
       if (corsMap[`/${filename}${path}`]) {
         router.options('/', (req, res) => {
           res.set('Access-Control-Allow-Origin', 'https://y.qq.com');
           res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
           res.set('Access-Control-Allow-Headers', 'Content-Type');
-          res.set('Access-Control-Allow-Credentials','true');
+          res.set('Access-Control-Allow-Credentials', 'true');
           res.sendStatus(200);
         })
       }
@@ -93,12 +82,12 @@ app.use('/', (req, res, next) => {
 });
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

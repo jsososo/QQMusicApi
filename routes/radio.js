@@ -1,8 +1,6 @@
-const request = require('../util/request');
-
 module.exports = {
   // 获取分类
-  '/category': async (req, res, next) => {
+  '/category': async ({req, res, request}) => {
     const {raw} = req.query;
     const result = await request({
       url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
@@ -43,7 +41,7 @@ module.exports = {
   },
 
   // 获取电台歌曲
-  '/': async (req, res) => {
+  '/': async ({req, res, request}) => {
     const {id, raw} = req.query;
 
     if (!id) {

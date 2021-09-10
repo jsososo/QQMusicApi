@@ -11,6 +11,36 @@
 
 灵感来源：[Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
+## NPM 使用
+
+```shell script
+yarn add qq-music-api
+```
+
+```javascript
+const qqMusic = require('qq-music-api');
+
+// 部分接口依赖 cookie, 这里穿参可以使用字符串或对象
+qqMusic.setCookie('xxx=xxx; xxx=xxx;');
+// or
+qqMusic.setCookie({ a: 'xxx', b: 'xxx' });
+
+qqMusic.api('search', { key: '周杰伦' })
+    .then(res => console.log(res))
+    .catch(err => console.log('接口调用出错'))
+
+qqMusic.api('search', { key: '周杰伦' })
+    .then((res) => console.log('搜索周杰伦：', res))
+    .catch(err => console.log('接口调用出错'))
+
+qqMusic.api('search/hot')
+    .then((res) => console.log('热搜词：', res))
+    .catch(err => console.log('接口调用出错'))//
+
+// 刷新登陆
+qqMusic.api('user/refresh')
+```
+
 ## Start
 
 ```shell
@@ -60,6 +90,14 @@ $ npm start
 
 
 ## 更新记录
+21-09-10 🍌 bug fix: 获取专辑信息出错
+
+21-08-22 🐚 新增刷新登陆 & mv 点赞 & bug fix
+
+21-08-15 🦆 支持 npm 使用 & bug fix
+
+21-06-27 🌰 修改部分接口cheerio调用
+
 21-02-10 🦛 修复部分歌手页面报错 & 增加歌手名字获取
 
 21-02-09 🍡 修复日推歌单 & 部分歌手详情格式问题
@@ -222,7 +260,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 示例：[/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s](http://api.qq.jsososo.com/song/urls?id=0039MnYb0qxYhV,004Z8Ihr0JIu5s)
 
-```javascript
+```json5
 // 晴天和七里香
 {
   "data": {
@@ -279,7 +317,7 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 返回示例：`k` 为热搜词，`n` 为搜索量
 
-```javascript
+```json5
 {
   "result": 100,
   "data": [
@@ -368,14 +406,31 @@ anxios({
 
 `data`: 字符串，cookie 信息，格式如下 `aaa=bbb; ccc=ddd; ....`
 
-该方法仅支持 post 请求，`content-type` 选择 `application/json`，同时，当且仅当传入的 cookie 为写配置的 QQ 号（启动参数 或 `bin/config.js`）时才会
-被作为默认的公用 cookie 存储使用，各位在搭建自己的服务时记得修改这里的信。参考如下 ![设置cookie](http://static.jsososo.com/200521/140442/bd3dd265f2da8be02429436592876b5b.png)
+该方法仅支持 post 请求，`content-type` 选择 `application/json`，参考如下 ![设置cookie](http://static.jsososo.com/200521/140442/bd3dd265f2da8be02429436592876b5b.png)
+
+使用建议：当获取到用户的 `cookie` 信息后可以通过这个接口存储到服务器
+
+#### 获取用户Cookie
+
+接口：`/user/getCookie`
+
+参数：
+
+`id`： QQ号或微信wxuin
+
+从服务器上获取通过 `/user/setCookie` 接口存储的 `cookie`。（回直接将 `cookie` 注入浏览器）
 
 #### 查看当前Cookie
 
-接口 `/user/cookie`
+接口：`/user/cookie`
 
-无需参数，共返回两个字段 `cookie` 为当前网站下的 cookie，`userCookie` 为服务器公用账号 cookie。
+无需参数，返回为当前网站下的 `cookie` (`Object` )。
+
+#### 刷新登陆
+
+接口：`/user/refresh`
+
+无需参数，用于延长登陆有效期，仅限 QQ 登陆，需要用户已登陆，调用这个接口可以刷新 `cookie` 中的 `qm_keyst` 和 `qqmusic_key`
 
 #### 用户主页信息
 
@@ -961,6 +1016,16 @@ ps: 官方的接口其实不是这几个type，但是为了考虑与下面的新
 `version`: MV 类型，默认 7 全部，具体数值从上面分类接口获取
 
 示例：[/mv/list](http://api.qq.jsososo.com/mv/list)
+
+#### 5、MV 点赞
+
+接口：`/mv/like`
+
+参数
+
+`id`: 视频的 vid，必填
+
+`type`: `1`: 点赞；`0`: 取消点赞。（默认`1`）
 
 ### 排行榜
 
