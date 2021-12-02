@@ -108,8 +108,8 @@ module.exports = {
         errMsg: '未登录'
       })
     }
-    const listInfo = await songlist["/"]({ query: { id } });
-    return res.send(listInfo);
+    req.query.id = id;
+    return songlist["/"]({req, res, request});
   },
 
   // banner 日推
