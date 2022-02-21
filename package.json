@@ -1,6 +1,6 @@
 {
   "name": "qq-music-api",
-  "version": "1.1.0-alpah.1",
+  "version": "1.1.1",
   "scripts": {
     "start": "node ./bin/www",
     "start:doc": "docsify serve docs",
