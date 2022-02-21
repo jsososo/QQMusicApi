@@ -13,41 +13,34 @@ const album = {
     }
 
     try {
-      const info = await album["/songs"]({req, request});
       const pageInfo = await request(`https://y.qq.com/n/yqq/album/${albummid}.html`, {dataType: 'raw'});
       const $ = cheerio.load(pageInfo);
-
-      const albumInfo = info.data.list[0].album;
-
-      const otherInfo = {};
-
-      $('.data_info__item').each((i, v) => {
-        const str = cheerio.load(v).text();
-        if (str.indexOf('唱片公司') >= 0) {
-          otherInfo.company = str.replace('唱片公司：', '');
-        } else if (str.indexOf('发行时间') >= 0) {
-          otherInfo.publishTime = str.replace('发行时间：', '');
-        }
-      });
+      let albumInfo = {};
+      try {
+        $('script').each((i, content) => {
+          content.children.forEach(({data = ''}) => {
+            if (data.includes('window.__USE_SSR__')) {
+              const {detail} = eval(data.replace(/window\.__/g, 'window__'));
+              albumInfo = {
+                ...detail,
+                name: detail.albumName,
+                subTitle: detail.title,
+                ar: detail.singer,
+                mid: detail.albumMid,
+                publishTime: detail.ctime,
+              }
+              delete albumInfo.singer;
+              delete albumInfo.albumMid;
+            }
+          })
+        })
+      } catch (err) {
+        console.log(err);
+      }
 
       res.send({
         result: 100,
-        data: {
-          ...otherInfo,
-          name: albumInfo.name,
-          subTitle: albumInfo.subtitle,
-          id: albumInfo.id,
-          mid: albummid,
-          ar: [
-            {
-              name: $('.data__singer_txt').text(),
-              id: $('.data__singer_txt').data('id'),
-              mid: $('.data__singer_txt').data('mid'),
-            },
-          ],
-          picUrl: $('#albumImg').attr('src'),
-          desc: $('#album_desc .about__cont p').text(),
-        },
+        data: albumInfo,
       })
     } catch (err) {
       res.send({

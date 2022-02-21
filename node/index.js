@@ -51,7 +51,13 @@ class QQMusic {
         cookies: this.cookie,
       };
       const res = {
-        send: resolve,
+        send: ({result, data, errMsg}) => {
+          if (result === 100) {
+            resolve(data);
+          } else {
+            reject({message: errMsg});
+          }
+        },
         redirect: (url) => url,
         cookie: (k, val) => this.setCookie({...this.cookie, [k]: val}),
       };

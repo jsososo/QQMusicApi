@@ -2,9 +2,8 @@ const cheerio = require('cheerio');
 
 module.exports = {
   // 获取歌手介绍
-  '/desc': async ({req, res, request}) => {
+  '/desc': async ({req, res, cache, request}) => {
     const {singermid, raw} = req.query;
-    const {cache} = global;
 
     let cacheKey = `singer_desc_${singermid}_${raw}`;
     let cacheData = cache.get(cacheKey)
@@ -42,7 +41,7 @@ module.exports = {
 
     const info = result.result.data.info || {};
 
-    info.singername = $('.data__name_txt.js_index').text();
+    info.singername = $('.data__name .data__name_txt').text();
 
     ['basic', 'other'].forEach((k) => {
       info[k] && info[k].item && !Array.isArray(info[k].item) && (info[k].item = [info[k].item])
@@ -59,10 +58,8 @@ module.exports = {
   },
 
   // 获取歌手专辑
-  '/album': async ({req, res, request}) => {
+  '/album': async ({req, res, cache, request}) => {
     const {singermid, pageNo = 1, pageSize = 20, raw} = req.query;
-
-    const {cache} = global;
 
     let cacheKey = `singer_album_${singermid}_${pageNo}_${pageSize}_${raw}`;
     let cacheData = cache.get(cacheKey)
@@ -121,11 +118,9 @@ module.exports = {
   },
 
   // 获取热门歌曲
-  '/songs': async ({req, res, request}) => {
+  '/songs': async ({req, res, cache, request}) => {
     const {singermid, num, raw, page = 1} = req.query;
     const pageSize = num ? parseInt(num) : 20;
-
-    const {cache} = global;
 
     let cacheKey = `singer_album_${singermid}_${pageSize}_${raw}_${page}`;
     let cacheData = cache.get(cacheKey)
