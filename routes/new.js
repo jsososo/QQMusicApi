@@ -1,6 +1,6 @@
 module.exports = {
   '/songs': async ({req, res, request}) => {
-    const {type = 5, raw} = req.query;
+    const {type = 0, raw} = req.query;
 
     const newType = {
       0: 5, // 最新
@@ -14,8 +14,8 @@ module.exports = {
     if (!newType) {
       return res.send({
         result: 500,
-        errMsg: 'type 不合法'
-      })
+        errMsg: 'type 不合法',
+      });
     }
 
     const result = await request({
@@ -23,17 +23,17 @@ module.exports = {
       data: {
         data: JSON.stringify({
           comm: {
-            ct: 24
+            ct: 24,
           },
           new_song: {
-            module: "newsong.NewSongServer",
-            method: "get_new_song_info",
+            module: 'newsong.NewSongServer',
+            method: 'get_new_song_info',
             param: {
               type: newType,
-            }
-          }
-        })
-      }
+            },
+          },
+        }),
+      },
     });
 
     if (Number(raw)) {
@@ -47,9 +47,8 @@ module.exports = {
           list: songlist,
           type,
         },
-      })
+      });
     }
-
   },
 
   '/album': async ({req, res, request}) => {
@@ -67,8 +66,8 @@ module.exports = {
     if (!typeName) {
       return res.send({
         result: 500,
-        errMsg: 'type 不合法'
-      })
+        errMsg: 'type 不合法',
+      });
     }
 
     const result = await request({
@@ -78,19 +77,19 @@ module.exports = {
         needNewCode: 0,
         data: JSON.stringify({
           comm: {
-            ct: 24
+            ct: 24,
           },
           new_album: {
-            module: "newalbum.NewAlbumServer",
-            method: "get_new_album_info",
+            module: 'newalbum.NewAlbumServer',
+            method: 'get_new_album_info',
             param: {
               area: type / 1,
               sin: 0,
-              num: num / 1
-            }
-          }
+              num: num / 1,
+            },
+          },
         }),
-      }
+      },
     });
 
     if (Number(raw)) {
@@ -102,8 +101,8 @@ module.exports = {
           list: result.new_album.data.albums,
           type: type / 1,
           typeName,
-        }
-      })
+        },
+      });
     }
   },
 
@@ -125,14 +124,14 @@ module.exports = {
       2: 'gangtai',
       3: 'oumei',
       4: 'korea',
-      5: 'janpan'
+      5: 'janpan',
     }[type];
 
     if (!lan) {
       return res.send({
         result: 500,
-        errMsg: 'type 不合法'
-      })
+        errMsg: 'type 不合法',
+      });
     }
 
     const result = await request({
@@ -140,7 +139,7 @@ module.exports = {
       data: {
         cmd: 'shoubo',
         lan,
-      }
+      },
     });
 
     if (Number(raw)) {
@@ -148,13 +147,13 @@ module.exports = {
     } else {
       const {mvlist: list} = result.data;
       res.send({
-        resultL: 100,
+        result: 100,
         data: {
           list,
           lan: result.data.lan,
           typeName,
-        }
-      })
+        },
+      });
     }
   },
-}
+};

@@ -90,6 +90,8 @@ $ npm start
 
 
 ## 更新记录
+22-07-09 🌠 Add jest & bug fix
+
 21-09-10 🍌 bug fix: 获取专辑信息出错
 
 21-08-22 🐚 新增刷新登陆 & mv 点赞 & bug fix
@@ -344,57 +346,6 @@ const url = `${domain}${s}${strMediaMid}${e}?guid=${guid}&vkey=${vkey}&fromtag=8
 
 示例：[/search/quick?key=周杰伦](http://api.qq.jsososo.com/search/quick?key=周杰伦)
 
-### 查找音乐
-
-#### 单个查找
-
-接口：`/song/find`
-
-参数：
-
-`key`: 关键词
-
-这个接口就像是简化版的搜索，根据关键词获取到搜出的第一个歌曲，不过他会直接带上播放链接，参数为 `url`，
-如果没有则表示无法获取到播放链接。这个接口的作用是，对于其他平台的歌单如果需要获取到企鹅音乐的信息时，
-可以通过 歌名 + 歌手 + 专辑 等关键词获取大致的歌曲，当然这是并不能保障稳定的。
-
-示例：[/song/find?key=周杰伦%2f稻香](http://api.qq.jsososo.com/song/find?key=周杰伦%2f稻香)
-
-#### 批量获取
-
-接口：`/song/finds`
-
-类型：仅支持`post`
-
-参数：
-
-`data`: 对象，`key` 为歌曲id，`value` 为搜索关键词
-
-同样，并不是所有传过去的 id 都会有返回，没返回就是没有找到，返回的歌曲也都是会包含播放链接
-
-示例：
-```javascript
-anxios({
-	url: "/song/finds",
-	method: "post",
-	data: {
-		298838: "笑忘书 王菲",
-		abcdefg: "邮差 王菲"
-	}
-})
-
-// 返回：
-
-{
-	data: {
-		208838: obj,
-		abcdefg: obj,
-	},
-	result: 100,
-}
-
-```
-
 
 ### 用户信息
 
@@ -623,18 +574,6 @@ anxios({
 ```
 
 示例：[/song?songmid=0039MnYb0qxYhV](http://api.qq.jsososo.com/song?songmid=0039MnYb0qxYhV)
-
-#### 批量获取
-
-接口：`/song/batch`
-
-参数：
-
-`songmids`: 必填
-
-这个接口本质为上一个接口的批量调用
-
-示例：[/song/batch?songmids=001PLl3C4gPSCI,0039MnYb0qxYhV](http://api.qq.jsososo.com/song/batch?songmids=001PLl3C4gPSCI,0039MnYb0qxYhV)
 
 #### 相似歌曲
 接口：`/song/similar`

@@ -17,17 +17,20 @@ module.exports = {
       });
     }
 
-    const cacheKey = `search_${key}_${pageNo}_${pageSize}_${t}`
+    const cacheKey = `search_${key}_${pageNo}_${pageSize}_${t}`;
     const cacheData = cache.get(cacheKey);
     if (cacheData) {
       res && res.send(cacheData);
       return cacheData;
     }
-    const url = {
-      // 0: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
-      2: `https://c.y.qq.com/soso/fcgi-bin/client_music_search_songlist?remoteplace=txt.yqq.playlist&page_no=${pageNo - 1}&num_per_page=${pageSize}&query=${key}`,
-      // 3: 'http://c.y.qq.com/soso/fcgi-bin/client_search_user',
-    }[t] || 'http://c.y.qq.com/soso/fcgi-bin/client_search_cp';
+    const url =
+      {
+        // 0: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
+        2: `https://c.y.qq.com/soso/fcgi-bin/client_music_search_songlist?remoteplace=txt.yqq.playlist&page_no=${
+          pageNo - 1
+        }&num_per_page=${pageSize}&query=${key}`,
+        // 3: 'http://c.y.qq.com/soso/fcgi-bin/client_search_user',
+      }[t] || 'http://c.y.qq.com/soso/fcgi-bin/client_search_cp';
 
     const typeMap = {
       0: 'song',
@@ -41,8 +44,8 @@ module.exports = {
     if (!typeMap[t]) {
       return res.send({
         result: 500,
-        errMsg: '搜索类型错误，检查一下参数 t'
-      })
+        errMsg: '搜索类型错误，检查一下参数 t',
+      });
     }
 
     let data = {
@@ -60,7 +63,7 @@ module.exports = {
         query: key,
         page_no: pageNo - 1,
         num_per_page: pageSize,
-      }
+      };
     }
 
     const result = await request({
@@ -68,8 +71,8 @@ module.exports = {
       method: 'get',
       data,
       headers: {
-        Referer: 'https://y.qq.com'
-      }
+        Referer: 'https://y.qq.com',
+      },
     });
 
     if (Number(raw)) {
@@ -86,8 +89,17 @@ module.exports = {
       12: 'mv',
       9: 'singer',
     };
-    const searchResult = (keyMap[t] ? result.data[keyMap[t]] : result.data) || [];
-    const {list, curpage, curnum, totalnum, page_no, num_per_page, display_num} = searchResult;
+    const searchResult =
+      (keyMap[t] ? result.data[keyMap[t]] : result.data) || [];
+    const {
+      list,
+      curpage,
+      curnum,
+      totalnum,
+      page_no,
+      num_per_page,
+      display_num,
+    } = searchResult;
 
     switch (Number(t)) {
       case 2:
@@ -115,9 +127,9 @@ module.exports = {
       },
       // header: req.header(),
       // req: JSON.parse(JSON.stringify(req)),
-    }
+    };
     cache.set(cacheKey, resData, 120);
-    res.send(resData);
+    res.send && res.send(resData);
     return resData;
   },
 
@@ -142,16 +154,18 @@ module.exports = {
     if (!key) {
       return res.send({
         result: 500,
-        errMsg: 'key ?'
-      })
+        errMsg: 'key ?',
+      });
     }
-    const result = await request(`https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?key=${key}&g_tk=5381`);
+    const result = await request(
+      `https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?key=${key}&g_tk=5381`,
+    );
     if (Number(raw)) {
       return res.send(result);
     }
     return res.send({
       result: 100,
       data: result.data,
-    })
+    });
   },
-}
+};

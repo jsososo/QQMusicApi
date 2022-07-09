@@ -1,13 +1,14 @@
 {
   "name": "qq-music-api",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "scripts": {
     "start": "node ./bin/www",
     "start:doc": "docsify serve docs",
     "prepack": "node ./node/build.js",
     "build:docker": "docker build -t qqmusic:1.0 .",
     "rm:docker": "docker container rm qqmusic -f",
-    "start:docker": "docker build -t qqmusic:1.0 . && docker run --name qqmusic -p 8888:80 -d qqmusic:1.0"
+    "start:docker": "docker build -t qqmusic:1.0 . && docker run --name qqmusic -p 8888:80 -d qqmusic:1.0",
+    "test": "jest"
   },
   "main": "./node/index.js",
   "files": [
@@ -37,6 +38,8 @@
     "xml2js": "^0.4.22"
   },
   "devDependencies": {
-    "docsify": "^4"
+    "docsify": "^4",
+    "jest": "^28.1.2",
+    "prettier": "^2.7.1"
   }
 }
