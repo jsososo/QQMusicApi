@@ -30,7 +30,7 @@ module.exports = {
           pageNo - 1
         }&num_per_page=${pageSize}&query=${key}`,
         // 3: 'http://c.y.qq.com/soso/fcgi-bin/client_search_user',
-      }[t] || 'http://c.y.qq.com/soso/fcgi-bin/client_search_cp';
+      }[t] || 'http://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp';
 
     const typeMap = {
       0: 'song',
@@ -71,7 +71,7 @@ module.exports = {
       method: 'get',
       data,
       headers: {
-        Referer: 'https://y.qq.com',
+        Referer: 'http://m.y.qq.com'
       },
     });
 
