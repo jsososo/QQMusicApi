@@ -77,7 +77,7 @@ fs.readdirSync(path.join(__dirname, 'routes')).forEach(file => {
 
 app.use('/', (req, res, next) => {
   const router = express.Router();
-  router.get('/api/music', (req, res) => require('./routes/index')['/'](req, res))
+  router.get('/', (req, res) => require('./routes/index')['/'](req, res))
   router(req, res, next);
 });
 
