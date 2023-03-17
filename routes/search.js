@@ -1,12 +1,17 @@
 module.exports = {
-  // 搜索
-  '/': async ({req, res, request, cache}) => {
-    let {
+  '/': async ({req, res, request, globalCookie, cache}) => {
+    const obj = {...req.query, ...req.body};
+    let { uin, qqmusic_key } = globalCookie.userCookie();
+    if (Number(obj.ownCookie)) {
+      uin = req.cookies.uin || uin;
+    }
+
+    const {
       pageNo = 1,
       pageSize = 20,
       key,
       t = 0, // 0：单曲，2：歌单，7：歌词，8：专辑，9：歌手，12：mv
-      raw,
+      raw
     } = req.query;
     let total = 0;
 
@@ -17,30 +22,24 @@ module.exports = {
       });
     }
 
+    // 缓存
     const cacheKey = `search_${key}_${pageNo}_${pageSize}_${t}`;
     const cacheData = cache.get(cacheKey);
     if (cacheData) {
       res && res.send(cacheData);
       return cacheData;
     }
-    const url =
-      {
-        // 0: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
-        2: `https://c.y.qq.com/soso/fcgi-bin/client_music_search_songlist?remoteplace=txt.yqq.playlist&page_no=${
-          pageNo - 1
-        }&num_per_page=${pageSize}&query=${key}`,
-        // 3: 'http://c.y.qq.com/soso/fcgi-bin/client_search_user',
-      }[t] || 'http://c.y.qq.com/soso/fcgi-bin/client_search_cp';
+
+    const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
 
     const typeMap = {
       0: 'song',
-      2: 'songlist',
+      2: 'album',
+      1: 'singer',
+      3: 'songlist',
       7: 'lyric',
-      8: 'album',
       12: 'mv',
-      9: 'singer',
     };
-
     if (!typeMap[t]) {
       return res.send({
         result: 500,
@@ -48,89 +47,53 @@ module.exports = {
       });
     }
 
-    let data = {
-      format: 'json', // 返回json格式
-      n: pageSize, // 一页显示多少条信息
-      p: pageNo, // 第几页
-      w: key, // 搜索关键词
-      cr: 1, // 不知道这个参数什么意思，但是加上这个参数你会对搜索结果更满意的
-      g_tk: 5381,
-      t,
-    };
+    const params = {
+      req_1: {
+        method: "DoSearchForQQMusicDesktop",
+        module: "music.search.SearchCgiService",
+        param: {
+          num_per_page: Number(pageSize),
+          page_num: Number(pageNo),
+          query: key,
+          search_type: Number(t)
+        }
+      }
+    }
+    let result = {}
 
-    if (Number(t) === 2) {
-      data = {
-        query: key,
-        page_no: pageNo - 1,
-        num_per_page: pageSize,
-      };
+    try {     
+      result = await request({
+        url,
+        method: 'POST',
+        data: params,
+        headers: {
+          Referer: 'https://y.qq.com'
+        },
+      });
+    } catch (error) {
+      return res.send({
+        result: 400,
+        error
+      })
     }
 
-    const result = await request({
-      url,
-      method: 'get',
-      data,
-      headers: {
-        Referer: 'https://y.qq.com',
-      },
-    });
-
+    // 直接返回原生数据
     if (Number(raw)) {
       return res.send(result);
     }
-
-    // 下面是数据格式的美化
-    const {keyword} = result.data;
-    const keyMap = {
-      0: 'song',
-      2: '',
-      7: 'lyric',
-      8: 'album',
-      12: 'mv',
-      9: 'singer',
-    };
-    const searchResult =
-      (keyMap[t] ? result.data[keyMap[t]] : result.data) || [];
-    const {
-      list,
-      curpage,
-      curnum,
-      totalnum,
-      page_no,
-      num_per_page,
-      display_num,
-    } = searchResult;
-
-    switch (Number(t)) {
-      case 2:
-        pageNo = page_no + 1;
-        pageSize = num_per_page;
-        total = display_num;
-        break;
-      default:
-        pageNo = curpage;
-        pageSize = curnum;
-        total = totalnum;
-        break;
-    }
-
-    const resData = {
+    const response = {
       result: 100,
       data: {
-        list,
+        list: Number(t) === 0 ? formatSongList(result.req_1.data.body[typeMap[t]].list) : result.req_1.data.body[typeMap[t]].list,
         pageNo,
         pageSize,
-        total,
-        key: keyword || key,
+        total: result.req_1.data.meta.sum,
+        key: result.req_1.data.meta.query || key,
         t,
         type: typeMap[t],
       },
-      // header: req.header(),
-      // req: JSON.parse(JSON.stringify(req)),
-    };
-    cache.set(cacheKey, resData, 120);
-    res.send && res.send(resData);
-    return resData;
+    }
+    res.send(response);
   },
 
   // 热搜词
@@ -168,4 +131,32 @@ module.exports = {
       data: result.data,
     });
   },
-};
+}
+
+function formatSongList(list) {
+  if (!Array.isArray(list)) {
+    return []
+  }
+  return list.map((item) => {
+    // 美化歌曲数据
+    return {
+      singer: item.singer, // 、
+      name: item.title,
+      songid: item.id,
+      songmid: item.mid,
+      songname: item.title,
+
+      albumid: item.album.id,
+      albummid: item.album.mid,
+      albumname: item.album.name,
+      interval: item.interval,
+
+      strMediaMid: item.file.media_mid,
+      size128: item.file.size_128mp3,
+      size320: item.file.size_320mp3,
+      sizeape: item.file.size_ape,
+      sizeflac: item.file.size_flac,
+      pay: item.pay || {}
+    }
+  })
+}
