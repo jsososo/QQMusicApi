@@ -1,3 +1,11 @@
+/*
+ * @Author       : lwwwray
+ * @Date         : 2023-03-17 18:40:40
+ * @LastEditors  : lwwwray
+ * @LastEditTime : 2023-04-04 00:47:02
+ * @FilePath     : \QQMusicApi\bin\www
+ * @Description  : 
+ */
 #!/usr/bin/env node
 
 /**
@@ -91,6 +99,6 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-  console.log(`Listening on \n http://localhost:${addr.port} \n http://127.0.0.1:${addr.port}`);
+  console.log(`Listening on \n http://localhost:${addr.port}/api/qqmusic \n http://127.0.0.1:${addr.port}/api/qqmusic`);
   console.log(`配置QQ号/wxuin 为：${global.QQ}`);
 }
